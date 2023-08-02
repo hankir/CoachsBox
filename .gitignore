@@ -1,0 +1,19 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+**/obj
+**/bin
+src/.vs
+*.user
+**/wwwroot/lib
+**/wwwroot/node_modules
+/src/CoachsBox.WebApp/wwwroot/js/**/*.js
+/src/CoachsBox.WebApp/wwwroot/js/**/*.map
+/releases
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/CoachsBox/v16/.suo
+/Logs
+/~$енерская ТЗ.docx
+/.vs

@@ -1,0 +1,110 @@
+﻿@using CoachsBox.WebApp.AppFacade.Students.DTO
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using MediatR;
+
+@inherits OwningComponentBase<IMediator>
+
+<div class="card">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" id="studentPages" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="common-tab" data-toggle="tab" href="#common" role="tab" aria-controls="common" aria-selected="true">Общие сведения</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#note" role="tab" aria-controls="note" aria-selected="true">
+          <i class="fas fa-comment text-secondary mr-2"></i>Примечание
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="tab-content" id="studentPagesContent">
+    <div class="tab-pane fade show active" id="common" role="tabpanel" aria-labelledby="common-tab">
+      <ul class="list-group list-group-flush">
+        @if (!string.IsNullOrWhiteSpace(this.Student.Birthday))
+        {
+          <li class="list-group-item" title="Дата рождения">
+            <i class="fas fa-birthday-cake text-success mr-3"></i>@this.Student.Birthday
+          </li>
+        }
+        @if (!string.IsNullOrWhiteSpace(this.Student.Address))
+        {
+          <li class="list-group-item" title="Адрес">
+            <i class="fas fa-map-marker-alt text-secondary mr-3"></i>@this.Student.Address
+          </li>
+        }
+        @if (!string.IsNullOrWhiteSpace(this.Student.PhoneNumber))
+        {
+          <li class="list-group-item" title="Телефон">
+            <i class="fas fa-phone text-danger mr-3"></i>@this.Student.PhoneNumber
+          </li>
+        }
+        @if (!string.IsNullOrWhiteSpace(this.Student.Email))
+        {
+          <li class="list-group-item" title="Эл. почта">
+            <i class="fas fa-at text-info mr-3"></i>@this.Student.Email
+          </li>
+        }
+        <li class="list-group-item m-2">
+          <p class="card-text">
+            <a class="card-link" href="./Students/Edit?studentId=@this.Student.StudentId">Изменить</a>
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-pane fade show" id="note" role="tabpanel" aria-labelledby="note-tab">
+
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" title="Примечание">
+          @if (string.IsNullOrWhiteSpace(this.Student.Note))
+          {
+            <h6 class="card-subtitle m-2 text-muted">Примечание не указано</h6>
+          }
+          else
+          {
+            <blockquote class="blockquote">
+              <p class="mb-0" style="white-space: pre-line">@this.Student.Note</p>
+            </blockquote>
+          }
+        </li>
+        <li class="list-group-item m-2">
+          <p class="card-text">
+            <a class="card-link" href="#" data-toggle="modal" data-target="#changeNoteModal">
+              <i class="fas fa-pen mr-2 text-warning"></i>Изменить примечание
+            </a>
+          </p>
+        </li>
+      </ul>
+
+      <div class="modal fade" id="changeNoteModal" tabindex="-1" aria-labelledby="changeNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="changeNoteModalLabel">Изменение примечания</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Примечание:</label>
+                  <textarea class="form-control" id="message-text" @bind="@this.Student.Note">@this.Student.Note</textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary"
+                      data-dismiss="modal"
+                      @onclick="@(async () => await this.ChangeNote(this.Student.Note))">
+                Изменить
+              </button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

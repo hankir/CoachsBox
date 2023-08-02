@@ -1,0 +1,13 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+<!-- Телефон -->
+<div class="form-group">
+  <label asp-for="PhoneNumber"></label>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <div class="input-group-text"><i class="fas fa-phone text-danger"></i></div>
+    </div>
+    <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="@Html.DisplayNameFor(model => model.PhoneNumber)" />
+  </div>
+  <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+</div>

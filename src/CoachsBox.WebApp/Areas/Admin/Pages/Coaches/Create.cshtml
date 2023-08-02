@@ -1,0 +1,23 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Coaches.CreateModel
+
+@{ Layout = "~/Pages/Shared/_Layout.cshtml";
+  ViewData["Title"] = "Новый тренер"; }
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+  <form method="post" class="col col-sm col-md col-xl-6 col-lg-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <partial name="_CoachEditorPartial" for="CreateCommand" />
+    <div class="form-group">
+      <input type="submit" value="Добавить тренера" class="btn btn-primary" />
+      <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+  <partial name="PersonEditorsPartial/AddressScripts" for="CreateCommand" />
+}

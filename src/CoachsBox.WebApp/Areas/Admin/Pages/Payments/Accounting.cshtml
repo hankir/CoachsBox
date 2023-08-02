@@ -1,0 +1,14 @@
+﻿@page
+@using CoachsBox.WebApp.Areas.Admin.Pages.Payments
+@model AccountingModel
+
+@{
+  ViewData["Title"] = "Отчетность";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<component type="typeof(AccountingView)" render-mode="ServerPrerendered" />
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

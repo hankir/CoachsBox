@@ -1,0 +1,126 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using CoachsBox.WebApp.Pages.Components
+@inject SignInManager<CoachsBoxWebAppUser> SignInManager
+@inject RoleManager<CoachsBoxWebAppRole> RoleManager
+@inject UserManager<CoachsBoxWebAppUser> UserManager
+
+@model IndexModel
+@{
+  ViewData["Title"] = "Главная страница";
+}
+
+
+@if (!this.SignInManager.IsSignedIn(this.User))
+{
+  <div class="jumbotron">
+    <h1 class="display-4">Добро пожаловать!</h1>
+    <p class="lead">Цифровая тренерская - это удобный инструмент управления школой, клубом или спортивным кружком.</p>
+    <hr class="my-4">
+    <p>Оплата, расписание, контакты тренеров, учеников и их родителей в одном месте. Доступно всем и сразу!</p>
+    @{
+      var hasAdministrator = await this.RoleManager.RoleExistsAsync(CoachsBoxWebAppRole.Administrator);
+      var hasAdministratorUsers = (await this.UserManager.GetUsersInRoleAsync(CoachsBoxWebAppRole.Administrator)).Any();
+    }
+    @if (hasAdministrator && hasAdministratorUsers)
+    {
+      <a class="btn btn-primary btn-lg" role="button" asp-area="Identity" asp-page="/Account/Login">Войти</a>
+    }
+    else
+    {
+      <a class="btn btn-primary btn-lg" role="button" asp-area="Identity" asp-page="/Account/Register">Начните сейчас!</a>
+      <a class="btn btn-secondary btn-lg" role="button" asp-area="Identity" asp-page="/Account/Login">Войти</a>
+    }
+  </div>
+
+  <!-- Section: Features v.1 -->
+  <section class="text-center my-5">
+
+    <!-- Section heading -->
+    <h2 class="h1-responsive font-weight-bold my-5">Почему цифровая тренерская это удобно?</h2>
+
+    <!-- Grid row -->
+    <div class="row">
+
+      <!-- Grid column -->
+      <div class="col-md-6">
+
+        <i class="fas fa-chart-area fa-3x text-danger"></i>
+        <h5 class="font-weight-bold my-4">Учет посещаемости</h5>
+        <p class="grey-text mb-md-0 mb-5">
+          Отмечайте учеников сразу на занятии с мобильного телефона. Не надо никуда нести отметки на бумаге,
+          бухгалтер увидит актуальный список со своего мобильного телефона или рабочего компьютера.
+        </p>
+
+      </div>
+      <!-- Grid column -->
+      <!-- Grid column -->
+      <div class="col-md-6">
+
+        <i class="fas fa-book fa-3x text-primary"></i>
+        <h5 class="font-weight-bold my-4">Учет оплаты</h5>
+        <p class="grey-text mb-md-0 mb-5">
+          Заносите сведения о поступивших платежах в систему. Разбейте платежи за тренировку,
+          инвентарь и любые другие платежи. Контролируйте своевременную оплату, цифровая тренерская подскажет должников.
+        </p>
+
+      </div>
+      <!-- Grid column -->
+      <!-- Grid row -->
+      <div class="row">
+        <!-- Grid column -->
+        <!-- Grid column -->
+        <div class="col-md-6">
+
+          <i class="fas fa-calendar-alt fa-3x text-success"></i>
+          <h5 class="font-weight-bold my-4">Планируйте занятия</h5>
+          <p class="grey-text mb-0">
+            Сформируйте расписание тренировочных групп. Следуйте ему, и если нужно корректируйте.
+            Добавляйте, переносите или отменяйте тренировки.
+          </p>
+
+        </div>
+
+        <!-- Grid column -->
+        <div class="col-md-6">
+
+          <i class="fas fa-comments fa-3x text-warning"></i>
+          <h5 class="font-weight-bold my-4">Оповещения</h5>
+          <p class="grey-text mb-0">
+            Рассылайте уведомления родителям и ученикам через СМС или почту.
+          </p>
+
+        </div>
+        <!-- Grid column -->
+
+      </div>
+
+    </div>
+    <!-- Grid row -->
+
+  </section>
+  <!-- Section: Features v.1 -->
+}
+else
+{
+  <!--<div class="card-columns">
+    <div class="card">
+      <div class="card-body">
+        <p class="card-text">Активные ученики</p>
+        <div class="card-title d-flex align-items-center justify-content-between">
+          <h5>323</h5>
+          <span class="text-muted mb-2">73%</span>
+        </div>
+        <p class="card-text">
+          <div class="progress">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </p>
+      </div>
+    </div>
+  </div> -->
+
+  @await Component.InvokeAsync(typeof(MyScheduleWidgetViewComponent), new { weekDate = this.Model.WeekDate });
+}
+

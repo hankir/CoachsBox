@@ -1,0 +1,90 @@
+﻿@page
+@inject UserManager<CoachsBoxWebAppUser> UserManager
+@model ReportsModel
+@{ ViewData["Title"] = "Отчетность";
+  ViewData["ActivePage"] = ManageNavPages.Reports; }
+
+<h4>@ViewData["Title"]</h4>
+
+
+<p>
+  Запрошенные отчеты будут отправленны на эл. почту, указанную при регистрации.<br />
+  <strong>Формирование отчета может занять некоторое время, дождитесь сообщения на эл. почту.</strong>
+</p>
+@{
+  var reportPeriod = this.User.GetUserNow().Date;
+  var email = (await this.UserManager.GetUserAsync(this.User))?.Email;
+}
+<div class="card-columns">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Посещаемость за месяц</h5>
+      <p class="card-text">Сводка посещений по каждому ученику в разрезе групп.</p>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#summaryGroupsAttendanceLogByMonthModal">Параметры</button>
+    </div>
+    <div class="modal fade" id="summaryGroupsAttendanceLogByMonthModal" tabindex="-1" aria-labelledby="summaryGroupsAttendanceLogByMonthModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="summaryGroupsAttendanceLogByMonthModalLabel">Посещаемость за месяц</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form asp-page="SummaryGroupsAttendanceLogByMonth" method="post">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="report-period" class="col-form-label">Месяц:</label>
+                <input type="month" class="form-control" asp-for="@reportPeriod" id="reportPeriod">
+              </div>
+              <div class="form-group">
+                <label for="report-period" class="col-form-label">Эл. почта:</label>
+                <input type="email" class="form-control" asp-for="@email" id="email">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Запросить</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Данные для начисления зарплаты за месяц</h5>
+      <p class="card-text">Сводка посещений по каждому ученику в разрезе групп и поступившим платежам.</p>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#summaryDataForSalaryByMonthModal">Параметры</button>
+    </div>
+    <div class="modal fade" id="summaryDataForSalaryByMonthModal" tabindex="-1" aria-labelledby="summaryDataForSalaryByMonthModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="summaryDataForSalaryByMonthModalLabel">Данные для начисления зарплаты за месяц<</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form asp-page="SummaryDataForSalaryByMonth" method="post">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="report-period" class="col-form-label">Месяц:</label>
+                <input type="month" class="form-control" asp-for="@reportPeriod" id="reportPeriod">
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Запросить</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

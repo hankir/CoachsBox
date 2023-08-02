@@ -1,0 +1,15 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Salaries.IndexModel
+
+@{ ViewData["Title"] = "Зарплата";
+  Layout = "~/Pages/Shared/_Layout.cshtml"; }
+
+@{ var month = DateTime.Today;}
+
+<component type="typeof(CoachsBox.WebApp.Areas.Admin.Pages.Salaries.Components.SalariesList)"
+           render-mode="Server"
+           param-EmptyListMessage="@("Нет расчитанных зарплат")" />
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

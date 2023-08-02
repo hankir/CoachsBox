@@ -1,0 +1,28 @@
+﻿@page
+@model CoachsBox.WebApp.Pages.Students.EditModel
+
+@{
+  ViewData["Title"] = "Изменение ученика";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+  <form method="post" class="col col-sm col-md col-xl-6 col-lg-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    @Html.HiddenFor(model => model.UpdateCommand.Id)
+
+    <partial name="_StudentEditorPartial" for="UpdateCommand" />
+
+    <div class="form-group">
+      <input type="submit" value="Сохранить" class="btn btn-primary" />
+      <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+  <partial name="PersonEditorsPartial/AddressScripts" for="UpdateCommand" />
+}

@@ -1,0 +1,80 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Payments.IndexModel
+@{
+  ViewData["Title"] = "Добавить платежи";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">@ViewData["Title"]</span>
+    <a class="float-right align-middle btn btn-success" asp-page="Recent">Показать недавние</a>
+  </div>
+
+  <div class="card-body">
+    <form method="post">
+
+      <div class="form-row align-items-center">
+        <div class="col-sm-auto my-1">
+          <label class="mb-0" asp-for="StudentName">Ученик</label>
+        </div>
+        <div class="col-sm-5 my-1">
+          <input type="text" class="form-control form-control-sm" asp-for="StudentName" placeholder="Введите ФИО ученика">
+        </div>
+
+        <div class="col-auto my-1">
+          <button type="submit" class="btn btn-secondary btn-sm">Найти</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+@{
+  var commandsByStudent = this.Model.Commands.GroupBy(command => new { StudentId = command.StudentId, StudentName = command.StudentName }).ToList();
+}
+
+<ul class="list-group">
+  @foreach (var studentCommand in commandsByStudent)
+  {
+    var groups = studentCommand.Where(command => command.GroupId > 0).ToList();
+    <li class="list-group-item border-0 bg-light px-0">
+      <h6 class="ml-3">@studentCommand.Key.StudentName</h6>
+
+      <ul class="list-group">
+        @if (groups.Count > 0)
+        {
+          @foreach (var paymentCommand in groups)
+          {
+            <li class="list-group-item list-group-item-light">
+              <form class="form-inline col pl-0" method="post">
+                @Html.Hidden(Html.NameFor(model => model.CreatePaymentCommand.GroupId), paymentCommand.GroupId)
+                @Html.Hidden(Html.NameFor(model => model.CreatePaymentCommand.StudentId), paymentCommand.StudentId)
+                @Html.HiddenFor(model => model.StudentName)
+                <div class="form-group col-sm-3 pl-0">
+                  <span class="small font-weight-bold mr-2">Группа:</span>
+                  <span class="small">@paymentCommand.GroupName</span>
+                </div>
+                <div class="form-group col-sm-auto pl-0">
+                  <input asp-for="CreatePaymentCommand.Amount" class="form-control form-control-sm" placeholder="Сумма" />
+                </div>
+                <div class="form-group col-sm-auto pl-0">
+                  <input asp-for="CreatePaymentCommand.WhenOccured" class="form-control form-control-sm" placeholder="Дата" />
+                </div>
+                <div class="form-group">
+                  <button type="submit" asp-page-handler="RegisterPayment" class="btn btn-primary btn-sm">Отправить</button>
+                </div>
+              </form>
+            </li>
+          }
+        }
+        else
+        {
+          <li class="list-group-item list-group-item-light">
+            <span class="small font-weight-bold">Нет групп</span>
+          </li>
+        }
+      </ul>
+    </li>
+  }
+</ul>

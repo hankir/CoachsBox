@@ -1,0 +1,116 @@
+﻿@using CoachsBox.WebApp.AppFacade.Documents.DTO
+
+@inherits StudentDocumentComponentBase<MedicalCertificateDTO>
+
+@if (!this.IsTransient())
+{
+  <div class="row">
+    <div class="col-auto d-flex align-items-center">
+      <i class="fas fa-file-medical-alt text-success mb-0 h1" style="margin-left:-5px"></i>
+    </div>
+    <div class="col">
+      <div>
+        <button class="btn btn-link p-0"
+                data-toggle="modal"
+                data-target="#medical-certificate-modal"
+                @onclick="OnEditClick">
+          Медицинская справка
+        </button>
+      </div>
+      <div>
+        <span class="mr-3">
+          <small class="mr-1 text-muted">Дата выдачи:</small>
+          <small>@(this.Document.Date?.ToShortDateString())</small>
+        </span>
+        <span>
+          <small class="mr-1 text-muted">Разрешения:</small>
+          @if (this.Document.AllowTraining)
+          {
+            <span class="badge badge-pill badge-success">тренировки</span>
+          }
+          else
+          {
+            <span class="badge badge-pill badge-secondary"><s>тренировки</s></span>
+          }
+          @if (this.Document.AllowCompetition)
+          {
+            <span class="badge badge-pill badge-success">соревнования</span>
+          }
+          else
+          {
+            <span class="badge badge-pill badge-secondary"><s>соревнования</s></span>
+          }
+        </span>
+      </div>
+    </div>
+  </div>
+}
+else
+{
+  <div class="d-flex align-items-center">
+    <i class="fas fa-plus-circle text-muted mb-0 h1"></i>
+    <button class="btn btn-link"
+            data-toggle="modal"
+            data-target="#medical-certificate-modal"
+            @onclick="OnEditClick">
+      Добавить медицинскую справку
+    </button>
+  </div>
+}
+
+<div class="modal fade" id="medical-certificate-modal" tabindex="-1" role="dialog" aria-labelledby="medical-certificate-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="medical-certificate-modal-label">Медицинская справка</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      @if (this.IsEditModelCreated())
+      {
+        <EditForm EditContext="EditContext">
+          <div class="modal-body">
+            <ValidationSummary Model="EditModel" />
+            <DataAnnotationsValidator />
+            @{
+              var validationMessages = context.GetValidationMessages();
+              if (validationMessages.Any())
+              {
+                <div class="alert alert-danger" role="alert">
+                  @foreach (var item in context.GetValidationMessages())
+                  {
+                    <div>@item</div>
+                  }
+                </div>
+              }
+            }
+            <div class="form-group">
+              <label for="medical-certificate-date" class="col-form-label">Дата выдачи:</label>
+              <InputDate class="form-control" id="medical-certificate-date" @bind-Value="EditModel.Date" />
+            </div>
+            <div class="custom-control custom-switch">
+              <InputCheckbox class="custom-control-input" id="medical-certificate-allow-training" @bind-Value="EditModel.AllowTraining" />
+              <label class="custom-control-label" for="medical-certificate-allow-training">Разрешены тренировки</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <InputCheckbox class="custom-control-input" id="medical-certificate-allow-competition" @bind-Value="EditModel.AllowCompetition" />
+              <label class="custom-control-label" for="medical-certificate-allow-competition">Разрешены соревнования</label>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-primary"
+                    disabled="@this.IsSubmitDisabled()"
+                    data-dismiss="@(this.EditContext.IsModified() ? "modal" : string.Empty)"
+                    @onclick="OnSubmitClick">
+              @(this.IsTransient() ? "Добавить" : "Сохранить")
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+          </div>
+        </EditForm>
+      }
+    </div>
+  </div>
+</div>

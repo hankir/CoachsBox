@@ -1,0 +1,42 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+
+@{
+  var emailAndPhoneVisible = !string.IsNullOrWhiteSpace(this.Model.Email) || !string.IsNullOrWhiteSpace(this.Model.PhoneNumber);
+  var emailGroupClassName = emailAndPhoneVisible ? "show" : "collapse";
+}
+
+<div class="form-row">
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Surname" model="@this.Model" />
+  </div>
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Name" model="@this.Model" />
+  </div>
+</div>
+
+<partial name="PersonEditorsPartial/Patronymic" model="@this.Model" />
+
+<div class="form-row">
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Sex" model="@this.Model" />
+  </div>
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Birthdate" model="@this.Model" />
+  </div>
+</div>
+
+<partial name="PersonEditorsPartial/Address" model="@this.Model" />
+
+<div class="form-group">
+  @if (!emailAndPhoneVisible)
+  {
+    <a data-toggle="collapse" href="#EmailAndPhone" role="button" aria-expanded="false" aria-controls="EmailAndPhone">
+      Указать телефон и эл. почту
+    </a>
+  }
+  <div class="@emailGroupClassName" id="EmailAndPhone">
+    <partial name="PersonEditorsPartial/Phone" model="@this.Model" />
+    <partial name="PersonEditorsPartial/Email" model="@this.Model" />
+  </div>
+</div>

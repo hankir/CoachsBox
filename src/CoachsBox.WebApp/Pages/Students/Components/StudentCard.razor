@@ -1,0 +1,23 @@
+﻿@inherits OwningComponentBase
+
+<CascadingAuthenticationState>
+  <div>
+    <hr />
+
+    <div class="row">
+      <div class="col-sm-5 mb-1">
+        <CommonInfo Student="@this.Student" />
+      </div>
+
+      <div class="col-sm-7 mb-1">
+        <AdditionalInfo Student="@this.Student" />
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col">
+        <AssociatedActivity Student="@this.Student" />
+      </div>
+    </div>
+  </div>
+</CascadingAuthenticationState>

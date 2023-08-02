@@ -1,0 +1,13 @@
+﻿@using Coaching.Accounting.SalaryModel
+@inherits OwningComponentBase<ISalaryQueryService>
+
+@if (this.isLoading)
+{
+  <div class="spinner-border spinner-border-sm text-success" role="status">
+    <span class="sr-only">Вычисление фонда зарплаты...</span>
+  </div>
+}
+else
+{
+  <BalanceBadge Balance="salaryFundBalance" ZeroBalanceText="Нет средств" />
+}

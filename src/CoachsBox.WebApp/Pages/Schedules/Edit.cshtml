@@ -1,0 +1,127 @@
+﻿@page
+
+@using CoachsBox.WebApp.Areas.Identity.Data
+
+@model CoachsBox.WebApp.Pages.Schedules.EditModel
+@{
+  ViewData["Title"] = "Edit";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Расписание группы</h1>
+<h5 class="text-info">@Model.GroupName</h5>
+<hr />
+<div class="row">
+  <div class="col-md-6">
+    <form method="post">
+      <div asp-validation-summary="All" class="text-danger"></div>
+      <input type="hidden" asp-for="UpdateCommand.ScheduleId" />
+      <input type="hidden" asp-for="UpdateCommand.GroupId" />
+
+      @if (this.User.IsInRole(CoachsBoxWebAppRole.Administrator))
+      {
+        <div class="form-row">
+          <div class="form-group col">
+            <label asp-for="UpdateCommand.CoachId" class="control-label">@Html.DisplayNameFor(model => model.UpdateCommand.CoachId)</label>
+            <select asp-for="UpdateCommand.CoachId" class="form-control" asp-items="Model.CoachList"></select>
+            <span asp-validation-for="UpdateCommand.CoachId" class="text-danger" />
+          </div>
+        </div>
+      }
+      else
+      {
+        <input type="hidden" asp-for="UpdateCommand.CoachId" />
+        if (this.User.GetCoachId() != this.Model.UpdateCommand.CoachId)
+        {
+          <div class="card col col-auto">
+            <div class="card-body">
+              <h5 class="card-title">Тренер</h5><div class="card-link">
+                <a asp-page="/Coaches/Details" asp-area="Admin" asp-route-coachId="@Model.UpdateCommand.CoachId">@Model.CoachFullName</a>
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      @if (this.Model.Schedule.Trainings.Count > 0)
+      {
+        <div class="form-row">
+          <div class="form-group col-6 mb-0">
+            <label>@Html.DisplayNameFor(model => Model.UpdateCommand.Schedule[0].DayOfWeek)</label>
+          </div>
+          <div class="form-group col-3 mb-0">
+            <label>@Html.DisplayNameFor(model => Model.UpdateCommand.Schedule[0].Start)</label>
+          </div>
+          <div class="form-group col-3 mb-0">
+            <label>@Html.DisplayNameFor(model => Model.UpdateCommand.Schedule[0].End)</label>
+          </div>
+        </div>
+      }
+
+      @{
+        var allowDelete = Model.UpdateCommand.Schedule.Count > 1;
+        for (int i = 0; i < Model.UpdateCommand.Schedule.Count; i++)
+        {
+          <div class="form-row">
+            <div class="form-group col-6">
+              <select asp-for="@Model.UpdateCommand.Schedule[i].DayOfWeek" class="form-control" asp-items="@Model.DayOfWeekList"></select>
+            </div>
+
+            <div class="form-group col-3">
+              <input asp-for="@Model.UpdateCommand.Schedule[i].Start" class="form-control" type="time" />
+            </div>
+
+            <div class="form-group col-3">
+              <input asp-for="@Model.UpdateCommand.Schedule[i].End" class="form-control float-left" type="time" />
+              @if (allowDelete)
+              {
+                <button asp-page-handler="DeleteTraining"
+                        asp-route-trainingIndex="@i"
+                        class="btn btn-link position-absolute"
+                        style="text-decoration: none;">
+                  ❌
+                </button>
+              }
+            </div>
+          </div>
+        }
+      }
+      <div class="form-group">
+        @if (this.Model.Schedule.Trainings.Count > 0)
+        {
+          <button asp-page-handler="AddTraining" class="btn btn-link">Добавить тренировку</button>
+        }
+        else
+        {
+          <div class="card mb-3">
+            <div class="card-body">
+              <blockquote class="blockquote mb-0">
+                <p class="mb-0 h6">Создайте расписание тренировок по одному из шаблонов</p>
+                <footer class="blockquote-footer">Вы всегда сможете изменить расписание группы после создания</footer>
+              </blockquote>
+            </div>
+          </div>
+
+          @foreach (var template in this.Model.ScheduleTemplates)
+          {
+            <button asp-page-handler="AddTrainingByTemplate" asp-route-templateId="@template.Id" class="btn btn-primary mb-1">
+              @template.Name
+            </button>
+          }
+        }
+      </div>
+
+      @if (this.Model.Schedule.Trainings.Count > 0)
+      {
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      }
+
+      <a class="btn btn-secondary" asp-page="/Groups/Details" asp-route-groupId="@Model.UpdateCommand.GroupId">Отмена</a>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

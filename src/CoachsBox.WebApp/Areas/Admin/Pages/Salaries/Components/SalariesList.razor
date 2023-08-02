@@ -1,0 +1,125 @@
+﻿@using CoachsBox.Coaching.Accounting.SalaryModel
+@inherits OwningComponentBase<ISalaryRepository>
+
+<AlertPageMessage />
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">Зарплата</span>
+    <button type="button"
+            disabled="@(!this.isCanAddSalary)"
+            title="@(!this.isCanAddSalary ? "Нельзя добавлять новый расчет зарплаты, пока есть другие не выплаченные" : string.Empty)"
+            class="btn btn-success float-right align-middle"
+            data-toggle="modal"
+            data-target="#createSalaryByMonthModal">
+      Добавить
+    </button>
+
+    <div class="modal fade" id="createSalaryByMonthModal" tabindex="-1" aria-labelledby="createSalaryByMonthModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createSalaryByMonthModalLabel">Добавление расчета зарплаты за месяц</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="month" class="col-form-label">Месяц:</label>
+                <input id="month" type="month" class="form-control"
+                       value="@(this.monthToAdd.ToString("yyyy-MM"))"
+                       @onchange="this.PeriodChanged" />
+              </div>
+
+              <div class="form-group">
+                <label for="paymentsPeriod" class="col-form-label">Учитывать платежи до:</label>
+                @{
+                  var paymentsPeriodClassName = "form-control";
+                  if (!this.IsPaymentsPeriodValid)
+                  {
+                    paymentsPeriodClassName += " is-invalid";
+                  }
+                  var paymentsPeriodString = this.paymentsPeriod.ToString("yyyy-MM-dd");
+                }
+                <input type="date" class="@paymentsPeriodClassName"
+                       value="@paymentsPeriodString"
+                       @onchange="this.PaymentsPeriodChanged"
+                       id="paymentsPeriod" aria-describedby="paymentsPeriodFeedback" />
+                <div id="paymentsPeriodFeedback" class="invalid-feedback">
+                  @this.paymentsPeriodValidation
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" disabled="@(!this.IsPaymentsPeriodValid)" class="btn btn-primary" data-dismiss="modal" @onclick="this.AddNewSalary">Добавить</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (this.salaries != null && this.salaries.Any())
+  {
+    <ul class="list-group list-group-flush">
+      @foreach (var salary in this.salaries)
+      {
+        <li @key="salary.Id" class="list-group-item list-group-item-action">
+          <div class="row">
+            <div class="col">
+              <a class="font-weight-bold" href="Admin/Salaries/Edit?salaryId=@salary.Id">@salary.DisplayName</a>
+            </div>
+            @if (salary.IsPaid)
+            {
+              <div class="col-auto">
+                <span class="small badge badge-pill badge-primary">Выплачено</span>
+              </div>
+            }
+            else
+            {
+              <div class="col-auto">
+                <span class="small text-muted">Фонд: </span>
+                <SalaryFund From="salary.PeriodBeginning" To="salary.PaymentsPeriodEnding" />
+              </div>
+            }
+            <div class="col-auto">
+              <span class="small text-muted">К выдаче: </span>
+              <BalanceBadge Balance="salary.TotalAmountToIssued" ZeroBalanceText="@("не расчитано")" />
+            </div>
+          </div>
+        </li>
+      }
+      @if (this.isSalaryAdding)
+      {
+        <li class="list-group-item list-group-item-action">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-warning" role="status">
+              <span class="sr-only">Добавление расчета зарплаты...</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  else
+  {
+    @if (this.isSalaryLoading)
+    {
+      <div class="d-flex justify-content-center my-3">
+        <div class="spinner-border text-success" role="status">
+          <span class="sr-only">Загрузка расчетов зарплаты...</span>
+        </div>
+      </div>
+    }
+    else
+    {
+      <div class="p-3">
+        <span>@this.EmptyListMessage</span>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,72 @@
+﻿@using Microsoft.Extensions.Configuration
+@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+
+@model CreatePersonCommand
+@inject IConfiguration Configuration
+
+@{
+  var daDataAPIKey = this.Configuration.GetDaDataAPIKey();
+  var isDaDataEnable = !string.IsNullOrWhiteSpace(daDataAPIKey);
+  var fullAddressClassName = isDaDataEnable ? "collapse" : "show";
+}
+
+@if (isDaDataEnable)
+{
+  <div class="form-row">
+    <div class="form-group col-md">
+      <label asp-for="Address"></label>
+      <div class="input-group">
+        <div class="input-group-prepend" data-toggle="collapse" href="#FullAddress" role="button" aria-expanded="false" aria-controls="FullAddress">
+          <div class="input-group-text"><i class="fas fa-map-marker-alt text-secondary"></i></div>
+        </div>
+        <input autocomplete="off" id="address" name="address" type="text" class="form-control" placeholder="Введите адрес"
+               title="@(this.Model.Address?.FullAddress())"
+               value="@(this.Model.Address?.FullAddress())" />
+      </div>
+      <div><span asp-validation-for="Address.Country" class="text-danger"></span></div>
+      <div><span asp-validation-for="Address.State" class="text-danger"></span></div>
+      <div><span asp-validation-for="Address.City" class="text-danger"></span></div>
+      <div><span asp-validation-for="Address.Street" class="text-danger"></span></div>
+    </div>
+  </div>
+}
+
+<div class="@fullAddressClassName" id="FullAddress">
+  <!-- Адрес -->
+  <div class="form-row">
+    <!-- Адрес -->
+    <div class="form-group col-md">
+      @if (!isDaDataEnable)
+      {
+        <label>Адрес</label>
+      }
+
+      <input asp-for="Address.Country" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Address.Country)" />
+      <span asp-validation-for="Address.Country" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md">
+      @if (!isDaDataEnable)
+      {
+        <label asp-for="Address.State" style="visibility:hidden"></label>
+      }
+      <input asp-for="Address.State" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Address.State)" />
+      <span asp-validation-for="Address.State" class="text-danger"></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md">
+      <input asp-for="Address.City" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Address.City)" />
+      <span asp-validation-for="Address.City" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md">
+      <input asp-for="Address.ZipCode" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Address.ZipCode)" />
+      <span asp-validation-for="Address.ZipCode" class="text-danger"></span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <input asp-for="Address.Street" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Address.Street)" />
+    <span asp-validation-for="Address.Street" class="text-danger"></span>
+  </div>
+</div>

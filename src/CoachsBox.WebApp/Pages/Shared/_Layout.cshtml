@@ -1,0 +1,121 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using CoachsBox.WebApp.Areas.Identity.Data
+@inject SignInManager<CoachsBoxWebAppUser> SignInManager
+@inject RoleManager<CoachsBoxWebAppRole> RoleManager
+@inject UserManager<CoachsBoxWebAppUser> UserManager
+
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+  <environment include="Staging,Production">
+    <partial name="_Yandex.Metrika" />
+  </environment>
+  -->
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - Тренерская</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="~/lib/font-awesome/css/solid.min.css" />
+  <link rel="stylesheet" href="~/lib/font-awesome/css/brands.min.css" />
+  <link rel="stylesheet" href="~/css/site.suggestions.css" />
+  <link rel="stylesheet" href="~/css/site.css" />
+  <base href="~/" />
+</head>
+<body class="bg-light">
+  <header id="header">
+    <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light bg-white border-bottom box-shadow mb-3">
+      <div class="container">
+        <a class="navbar-brand" asp-area="" asp-page="/Index">Тренерская</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse">
+          <partial name="_LoginPartial" />
+          @if (this.SignInManager.IsSignedIn(this.User))
+          {
+            var coachsBoxUser = await this.UserManager.GetUserAsync(this.User);
+            var userIsAdmin = await this.UserManager.IsInRoleAsync(coachsBoxUser, CoachsBoxWebAppRole.Administrator);
+            <ul class="navbar-nav flex-grow-1">
+              <li class="nav-item">
+                <a class="nav-link text-dark" asp-page="/Students/Index">Ученики</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" asp-page="/Groups/Index">Группы</a>
+              </li>
+              @if (userIsAdmin)
+              {
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Coaches/Index">Тренера</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Branches/Index">Филиалы</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Tariffs/Index">Тарифы</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Payments/Index">Платежи</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Payments/Accounting">Отчетность</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-dark" asp-area="Admin" asp-page="/Salaries/Index">Зарплата</a>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="container">
+    <partial name="_CookieConsentPartial" />
+    <div id="blazor-error-ui">
+      <environment include="Staging,Production">
+        Произошла непредвиденная ошибка. Страницу необходимо обновить.
+      </environment>
+      <environment include="Development">
+        Произошла непредвиденная ошибка, обратитесь в службу поддержки.
+      </environment>
+      <a href="" class="reload">Обновить страницу</a>
+      <a class="dismiss">🗙</a>
+    </div>
+    <div id="components-reconnect-modal">
+      <div class="reconnecting alert alert-warning m-1" role="alert">
+        Соединение с сервером потеряно. Попытка подключиться к серверу...
+      </div>
+      <div class="failed alert alert-danger m-1" role="alert">
+        Повторное подключение к серверу не удалось, нажмите <a href="" onclick="window.Blazor.reconnect(); return false;">повторить</a>.
+      </div>
+      <div class="rejected alert alert-danger m-1" role="alert">
+        Соединение с сервером появилось, но было отклонено, нажмите <a href="" onclick="location.reload(); return false;">обновить</a>.
+      </div>
+    </div>
+    <main role="main" class="pb-3">
+      @RenderBody()
+    </main>
+  </div>
+
+  <footer class="border-top footer text-muted">
+    <div class="container">
+      &copy; 2020 - Coach's Box
+    </div>
+  </footer>
+
+  <script>
+    const webEnvironment = {
+      baseUrl: '@(this.Url.Page("/Index") == "/" ? "" : this.Url.Page("/Index"))'
+    };
+  </script>
+
+  <script src="~/lib/requirejs/require.min.js"></script>
+  <script src="~/js/startup.js"></script>
+
+  @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,24 @@
+﻿<small>@this.studentsCounValue</small>
+
+@code {
+  string studentsCounValue;
+
+  [Parameter]
+  public int Count { get; set; }
+
+  protected override void OnInitialized()
+  {
+    int lastDigitOfStudentsCount = this.Count % 10;
+    if (this.Count < 1)
+      this.studentsCounValue = "Нет учеников";
+    else if (lastDigitOfStudentsCount == 1 && (this.Count > 14 || this.Count == 1))
+      this.studentsCounValue = $"{this.Count} ученик";
+    else if (lastDigitOfStudentsCount > 1 && lastDigitOfStudentsCount < 5 && (this.Count > 14 || this.Count < 5))
+
+      this.studentsCounValue = $"{this.Count} ученика";
+    else
+      this.studentsCounValue = $"{this.Count} учеников";
+
+    base.OnInitialized();
+  }
+}

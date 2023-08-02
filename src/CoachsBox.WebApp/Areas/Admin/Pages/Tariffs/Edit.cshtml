@@ -1,0 +1,45 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Tariffs.EditModel
+
+@{
+  ViewData["Title"] = "Изменение тарифа";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+  <div class="col-md-4">
+    <form method="post">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      @Html.HiddenFor(model => model.Tariff.AgreementId)
+
+      <div class="form-group">
+        <label asp-for="Tariff.Description" class="control-label">@Html.DisplayNameFor(model => model.Tariff.Description)</label>
+        <input asp-for="Tariff.Description" class="form-control" />
+        <span asp-validation-for="Tariff.Description" class="text-danger" />
+      </div>
+
+      <div class="form-group">
+        <label asp-for="Tariff.TrainingRate" class="control-label">@Html.DisplayNameFor(model => model.Tariff.TrainingRate)</label>
+        <input asp-for="Tariff.TrainingRate" class="form-control" />
+        <span asp-validation-for="Tariff.TrainingRate" class="text-danger" />
+      </div>
+
+      <div class="form-group">
+        <label asp-for="Tariff.AccrualType" class="control-label">@Html.DisplayNameFor(model => model.Tariff.AccrualType)</label>
+        <select asp-for="Tariff.AccrualType.AccrualType" class="form-control" asp-items="Model.AccrualTypeList"></select>
+        <span asp-validation-for="Tariff.AccrualType" class="text-danger" />
+      </div>
+
+      <div class="form-group">
+        <input type="submit" value="Сохранить" class="btn btn-primary" />
+        <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

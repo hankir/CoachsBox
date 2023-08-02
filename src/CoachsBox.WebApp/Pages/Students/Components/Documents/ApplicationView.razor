@@ -1,0 +1,89 @@
+﻿@using CoachsBox.WebApp.AppFacade.Documents.DTO
+
+@inherits StudentDocumentComponentBase<ApplicationDTO>
+
+@if (!this.IsTransient())
+{
+  <div class="row">
+    <div class="col-auto d-flex align-items-center">
+      <i class="fas fa-file-alt text-secondary mb-0 h1"></i>
+    </div>
+    <div class="col">
+      <div>
+        <button class="btn btn-link p-0"
+                data-toggle="modal"
+                data-target="#add-application-modal"
+                @onclick="OnEditClick">
+          Заявление
+        </button>
+      </div>
+      <div>
+        <span>
+          <small class="mr-1 text-muted">Дата заявления:</small>
+          <small>@(this.Document.Date?.ToShortDateString())</small>
+        </span>
+      </div>
+    </div>
+  </div>
+}
+else
+{
+  <div class="d-flex align-items-center">
+    <i class="fas fa-plus-circle text-muted mb-0 h1"></i>
+    <button class="btn btn-link"
+            data-toggle="modal"
+            data-target="#add-application-modal"
+            @onclick="OnEditClick">
+      Добавить заявление
+    </button>
+  </div>
+}
+
+
+<div class="modal fade" id="add-application-modal" tabindex="-1" role="dialog" aria-labelledby="add-application-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-application-modal-label">Заявление</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      @if (this.IsEditModelCreated())
+      {
+        <EditForm EditContext="@this.EditContext">
+          <div class="modal-body">
+            <ValidationSummary Model="EditModel" />
+            <DataAnnotationsValidator />
+            @{
+              var validationMessages = context.GetValidationMessages();
+              if (validationMessages.Any())
+              {
+                <div class="alert alert-danger" role="alert">
+                  @foreach (var item in context.GetValidationMessages())
+                  {
+                    <div>@item</div>
+                  }
+                </div>
+              }
+            }
+            <div class="form-group">
+              <label for="application-date" class="col-form-label">Дата заявления:</label>
+              <InputDate id="application-date" class="form-control" @bind-Value="EditModel.Date" />
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"
+                    disabled="@(this.IsSubmitDisabled())"
+                    data-dismiss="@(this.EditContext.IsModified() ? "modal" : string.Empty)"
+                    @onclick="OnSubmitClick">
+              @(this.IsTransient() ? "Добавить" : "Сохранить")
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+          </div>
+        </EditForm>
+      }
+    </div>
+  </div>
+</div>

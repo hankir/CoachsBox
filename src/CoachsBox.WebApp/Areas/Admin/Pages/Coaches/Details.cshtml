@@ -1,0 +1,97 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Coaches.DetailsModel
+
+@{
+  ViewData["Title"] = this.Model.Coach.FullName;
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h3>@Model.Coach.FullName</h3>
+
+<div>
+  <hr />
+
+  <div class="row">
+    <div class="col-sm-5 mb-1">
+      <div class="card">
+        <div class="card-header">
+          Общие сведения
+        </div>
+        <ul class="list-group list-group-flush">
+          @if (!string.IsNullOrWhiteSpace(this.Model.Coach.Birthday))
+          {
+            <li class="list-group-item" title="@Html.DisplayNameFor(model => model.Coach.Birthday)">
+              <i class="fas fa-birthday-cake text-success mr-3"></i>@Html.DisplayFor(model => model.Coach.Birthday)
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(this.Model.Coach.Address))
+          {
+            <li class="list-group-item" title="@Html.DisplayNameFor(model => model.Coach.Address)">
+              <i class="fas fa-map-marker-alt text-secondary mr-3"></i>@Html.DisplayFor(model => model.Coach.Address)
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(this.Model.Coach.PhoneNumber))
+          {
+            <li class="list-group-item" title="@Html.DisplayNameFor(model => model.Coach.PhoneNumber)">
+              <i class="fas fa-phone text-danger mr-3"></i>@Html.DisplayFor(model => model.Coach.PhoneNumber)
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(this.Model.Coach.Email))
+          {
+            <li class="list-group-item" title="@Html.DisplayNameFor(model => model.Coach.Email)">
+              <i class="fas fa-at text-info mr-3"></i>@Html.DisplayFor(model => model.Coach.Email)
+            </li>
+          }
+        </ul>
+        <div class="card-body">
+          <a class="card-link" asp-page="./Edit" asp-route-coachId="@Model.Coach.Id">Изменить</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-7 mb-1">
+      <div class="card">
+        <div class="card-header">Доступ в систему</div>
+        <div class="card-body">
+          @if (this.Model.ModelState.ErrorCount > 0)
+          {
+            <div class="alert alert-danger" role="alert">
+              <div asp-validation-summary="All"></div>
+            </div>
+          }
+
+          @if (this.Model.AccountEmailChangedFromCoach)
+          {
+            <div class="alert alert-warning" role="alert">
+              Эл. почта тренера '<b>@this.Model.Coach.Email</b>' отличается от эл. почты, используемой для входа в систему '<b>@this.Model.AccountEmail</b>' <br />
+              <form autocomplete="off" method="post">
+                <button type="submit" class="btn btn-link px-0"
+                        asp-page="Details"
+                        asp-route-coachId="@Model.Coach.Id"
+                        asp-route-userName="@Model.AccountEmail"
+                        asp-page-handler="UpdateUserName">
+                  Обновить данные для входа
+                </button>
+              </form>
+            </div>
+          }
+
+          @{ var titleClassName = $"text-{Model.AccountStatusStyle}"; }
+          <h5 class="card-title @titleClassName">@Model.AccountStatus</h5>
+          <p class="card-text">@Model.AccountStatusDetails</p>
+          @if (!string.IsNullOrWhiteSpace(Model.AccountActionTitle) && !string.IsNullOrWhiteSpace(Model.AccountActionHandler))
+          {
+            <form autocomplete="off" method="post">
+              <button type="submit" class="btn btn-primary"
+                      asp-page="Details"
+                      asp-route-coachId="@Model.Coach.Id"
+                      asp-route-personId="@Model.PersonId"
+                      asp-page-handler="@Model.AccountActionHandler">
+                @Model.AccountActionTitle
+              </button>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>

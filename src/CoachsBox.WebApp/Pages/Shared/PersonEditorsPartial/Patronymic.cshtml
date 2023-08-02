@@ -1,0 +1,8 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+<!-- Отчество -->
+<div class="form-group">
+  <label asp-for="Patronymic"></label>
+  <input asp-for="Patronymic" class="form-control" placeholder="Иванович" />
+  <span asp-validation-for="Patronymic" class="text-danger"></span>
+</div>

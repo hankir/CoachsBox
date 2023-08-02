@@ -1,0 +1,13 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+<!-- Эл. почта -->
+<div class="form-group">
+  <label asp-for="Email"></label>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <div class="input-group-text"><i class="fas fa-at text-primary"></i></div>
+    </div>
+    <input asp-for="Email" type="email" class="form-control" placeholder="example@@coachsbox.com" />
+  </div>
+  <span asp-validation-for="Email" class="text-danger"></span>
+</div>

@@ -1,0 +1,130 @@
+﻿@using System.Globalization
+@using CoachsBox.WebApp.Pages.Attendance
+@using CoachsBox.WebApp.Areas.Identity.Data
+
+@model CoachsBox.WebApp.Pages.Components.MyScheduleWidgetViewComponent
+
+@{
+  var dateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
+  var currentDate = this.Model.WeekNavigation.Current.Date;
+  var localizer = this.Model.Localizer;
+}
+
+<div class="text-left">
+  <h1 class="display-4">Расписание</h1>
+
+  <div class="d-flex mb-2">
+    <div class="dropdown">
+      <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @localizer[dateTimeFormat.GetMonthName(currentDate.Month)]
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        @{
+          for (int i = 1; i <= 12; i++)
+          {
+            var className = currentDate.Month == i ? "dropdown-item active" : "dropdown-item";
+            <a class="@className"
+               asp-page="Index"
+               asp-page-handler="MoveToMonth"
+               asp-route-fromWeekDate="@currentDate.ToShortDateString()"
+               asp-route-month="@i">
+              @localizer[dateTimeFormat.GetMonthName(i)]
+            </a>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="dropdown ml-2 mr-auto">
+      <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @this.Model.WeekNavigation.Current.Date.Year
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        @for (int i = 2018; i < 2023; i++)
+        {
+          var className = currentDate.Year == i ? "dropdown-item active" : "dropdown-item";
+          <a class="@className"
+             asp-page="Index"
+             asp-page-handler="MoveToYear"
+             asp-route-fromWeekDate="@currentDate.ToShortDateString()"
+             asp-route-year="@i">
+            @i
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a class="btn btn-outline-info" title="Показать расписание на сегодня" asp-page="Index">Сегодня</a>
+      <a class="btn btn-outline-info"
+         title="Показать расписание на предыдущую неделю"
+         asp-page="Index"
+         asp-page-handler="MovePrev"
+         asp-route-fromWeekDate="@currentDate.ToShortDateString()">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <a class="btn btn-outline-info"
+         title="Показать расписание на следующую неделю"
+         asp-page="Index"
+         asp-page-handler="MoveNext"
+         asp-route-fromWeekDate="@currentDate.ToShortDateString()">
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="list-group list-group-horizontal" id="list-tab" role="tablist">
+    @foreach (var weekDayItem in this.Model.WeekNavigation.WeekDays)
+    {
+      var className = "p-2 text-center list-group-item list-group-item-action";
+      if (weekDayItem == this.Model.WeekNavigation.Current)
+      {
+        className += " active";
+      }
+      <a class="@className" asp-route-weekDate="@weekDayItem.Date.ToShortDateString()">
+        @weekDayItem.AbbreviatedDayName<br />@weekDayItem.Date.Day
+      </a>
+    }
+  </div>
+
+  @if (this.User.IsInRole(CoachsBoxWebAppRole.Coach))
+  {
+    @(await this.Html.RenderComponentAsync<AttendanceLogRestrictionMessage>(RenderMode.Static, new { ClassName = "mb-0 mt-2", CheckedDate = currentDate }))
+  }
+
+  <div class="tab-content mt-2" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+      @if (this.Model.DayTrainings.Any())
+      {
+        <div class="list-group">
+          @foreach (var training in this.Model.DayTrainings)
+          {
+            <a asp-page="/Attendance/Edit"
+               asp-route-groupId="@training.GroupId"
+               asp-route-date="@currentDate.ToString("d", CultureInfo.InvariantCulture.DateTimeFormat)"
+               asp-route-start="@training.StartTraining"
+               asp-route-end="@training.EndTraining"
+               class="list-group-item list-group-item-action">
+              <div class="d-flex w-100 justify-content-between">
+                <div>
+                  <h6 class="my-0">@training.GroupName</h6>
+                  @(await this.Html.RenderComponentAsync<StudentsCount>(RenderMode.Static, new { Count = training.StudentsCount }))
+                </div>
+                <small class="text-muted">@training.StartTraining.ToString("hh\\:mm")<br />@training.EndTraining.ToString("hh\\:mm")</small>
+              </div>
+            </a>
+          }
+        </div>
+      }
+      else
+      {
+        <div class="alert alert-info" role="alert">
+          @this.Model.EmptyListMessage
+        </div>
+      }
+    </div>
+    <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">...</div>
+    <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">...</div>
+    <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">...</div>
+  </div>
+</div>

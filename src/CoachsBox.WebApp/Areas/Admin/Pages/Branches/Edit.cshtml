@@ -1,0 +1,27 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Branches.EditModel
+
+@{
+  ViewData["Title"] = "Изменение филиала";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+  <div class="col-md-4">
+    <form method="post">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <partial name="_BranchEditor" for="EditCommand" />
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

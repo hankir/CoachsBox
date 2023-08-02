@@ -1,0 +1,65 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Tariffs.IndexModel
+@{
+  ViewData["Title"] = "Тарифы";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">@ViewData["Title"]</span>
+    <a class="float-right align-middle btn btn-success" asp-page="Create">Добавить</a>
+    <button type="button" class="btn btn-primary float-right align-middle mr-2" data-toggle="modal" data-target="#accrualsCalculator">Начислить</button>
+  </div>
+  <ul class="list-group list-group-flush">
+    @foreach (var tariff in this.Model.Tariffs)
+    {
+      <li class="list-group-item">
+        <div>
+          <a class="font-weight-bold" asp-page="./Details" asp-route-tariffId="@tariff.AgreementId">@Html.DisplayFor(modelItem => tariff.Description)</a>
+          <div>
+            <div class="float-left mr-3">
+              <span class="small font-weight-bold text-success"><i class="fas fa-ruble-sign"></i></span>
+              <span class="small">@Html.DisplayFor(modelItem => tariff.TrainingRate)<span class="text-secondary"> / тренировка</span></span>
+            </div>
+            <div class="float-left mr-3">
+              <span class="small font-weight-bold text-danger"><i class="fas fa-hand-holding-usd"></i></span>
+              <span class="small">@Html.DisplayFor(modelItem => tariff.AccrualType.AccrualTypeName)</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
+
+<div class="modal fade" id="accrualsCalculator" tabindex="-1" role="dialog" aria-labelledby="accrualsCalculatorLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="accrualsCalculatorLabel">Период начислений</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label asp-for="AccruePeriodStart" class="col-form-label">@Html.DisplayNameFor(model => model.AccruePeriodStart):</label>
+            <input asp-for="AccruePeriodStart" type="date" class="form-control">
+          </div>
+          <div class="form-group">
+            <label asp-for="AccruePeriodEnd" class="col-form-label">@Html.DisplayNameFor(model => model.AccruePeriodEnd):</label>
+            <input asp-for="AccruePeriodEnd" type="date" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-secondary" asp-page-handler="ProcessAccrual">Обработать</button>
+          <button type="submit" class="btn btn-primary" asp-page-handler="CalculateAccruals">Начислить</button>
+          <button type="submit" class="btn btn-success" asp-page-handler="CalculateAccrualsForNow">Начислить за сегодня</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

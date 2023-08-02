@@ -1,0 +1,101 @@
+﻿@using CoachsBox.WebApp.AppFacade.Documents.DTO
+
+@inherits StudentDocumentComponentBase<InsurancePolicyDTO>
+
+@if (!this.IsTransient())
+{
+  <div class="row">
+    <div class="col-auto d-flex align-items-center">
+      <i class="fas fa-file-medical text-warning mb-0 h1"></i>
+    </div>
+    <div class="col">
+      <div>
+        <button class="btn btn-link p-0"
+                data-toggle="modal"
+                data-target="#insurance-policy-modal"
+                @onclick="OnEditClick">
+          Страховой полис № @this.Document.Number
+        </button>
+      </div>
+      <div>
+        <span class="mr-3">
+          <small class="mr-1 text-muted">Действителен с:</small>
+          <small>@(this.Document.Date?.ToShortDateString())</small>
+        </span>
+        <span>
+          <small class="mr-1 text-muted">Действителен до:</small>
+          <small>@(this.Document.EndDate?.ToShortDateString())</small>
+        </span>
+      </div>
+    </div>
+  </div>
+}
+else
+{
+  <div class="d-flex align-items-center">
+    <i class="fas fa-plus-circle text-muted mb-0 h1"></i>
+    <button class="btn btn-link"
+            data-toggle="modal"
+            data-target="#insurance-policy-modal"
+            @onclick="OnEditClick">
+      Добавить страховой полис
+    </button>
+  </div>
+}
+
+<div class="modal fade" id="insurance-policy-modal" tabindex="-1" role="dialog" aria-labelledby="insurance-policy-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="insurance-policy-modal-label">Страховой полис</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      @if (this.IsEditModelCreated())
+      {
+        <EditForm EditContext="EditContext">
+          <div class="modal-body">
+            <ValidationSummary Model="EditModel" />
+            <DataAnnotationsValidator />
+            @{
+              var validationMessages = context.GetValidationMessages();
+              if (validationMessages.Any())
+              {
+                <div class="alert alert-danger" role="alert">
+                  @foreach (var item in context.GetValidationMessages())
+                  {
+                    <div>@item</div>
+                  }
+                </div>
+              }
+            }
+            <div class="form-group">
+              <label for="insurance-policy-number" class="col-form-label">Номер:</label>
+              <InputText class="form-control" id="insurance-policy-number" @bind-Value="EditModel.Number" />
+            </div>
+            <div class="form-group">
+              <label for="insurance-policy-date" class="col-form-label">Действителен с:</label>
+              <InputDate class="form-control" id="insurance-policy-date" @bind-Value="EditModel.Date" />
+            </div>
+            <div class="form-group">
+              <label for="insurance-policy-end-date" class="col-form-label">Действителен до:</label>
+              <InputDate class="form-control" id="insurance-policy-end-date" @bind-Value="EditModel.EndDate" />
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-primary"
+                    disabled="@this.IsSubmitDisabled()"
+                    data-dismiss="@(this.EditContext.IsModified() ? "modal" : string.Empty)"
+                    @onclick="OnSubmitClick">
+              @(this.IsTransient() ? "Добавить" : "Сохранить")
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+          </div>
+        </EditForm>
+      }
+    </div>
+  </div>
+</div>

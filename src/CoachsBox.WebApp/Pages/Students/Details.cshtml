@@ -1,0 +1,16 @@
+﻿@page
+@using CoachsBox.WebApp.Pages.Students.Components
+@model CoachsBox.WebApp.Pages.Students.DetailsModel
+
+@{
+  ViewData["Title"] = this.Model.Student.FullName;
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h3>@Model.Student.FullName</h3>
+
+<component type="typeof(StudentCard)" render-mode="ServerPrerendered" param-Student="@this.Model.Student" />
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

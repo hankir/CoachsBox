@@ -1,0 +1,26 @@
+﻿@page
+@model CoachsBox.WebApp.Pages.Attendance.EditModel
+@{
+  ViewData["Title"] = "Edit";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+@{
+  var parameters = new
+  {
+    TrainingInfo = new AttendanceLogEditor.Parameters
+    {
+      CoachId = this.Model.CoachId,
+      GroupId = this.Model.GroupId,
+      Date = this.Model.Date,
+      Start = this.Model.Start,
+      End = this.Model.End
+    }
+  };
+}
+
+@(await Html.RenderComponentAsync<AttendanceLogEditor>(RenderMode.ServerPrerendered, parameters))
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

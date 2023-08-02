@@ -1,0 +1,42 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Branches.IndexModel
+
+@{
+  ViewData["Title"] = "Филиалы";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">@ViewData["Title"]</span>
+    <a class="float-right align-middle btn btn-success" asp-page="Create">Добавить</a>
+  </div>
+  <ul class="list-group list-group-flush">
+    @foreach (var branchDTO in Model.Branches)
+    {
+      <li class="list-group-item">
+        <!-- Фотка человека -->
+        <div class="float-left"></div>
+        <div>
+          <a class="font-weight-bold" asp-page="./Details" asp-route-branchId="@branchDTO.Id">
+            @Html.DisplayFor(modelItem => branchDTO.City), @Html.DisplayFor(modelItem => branchDTO.State)
+          </a>
+          <div>
+            <div class="float-left mr-3">
+              <span class="small font-weight-bold">📞</span>
+              <span class="small">@Html.DisplayFor(modelItem => branchDTO.PhoneNumber)</span>
+            </div>
+            <div class="float-left mr-3">
+              <span class="small font-weight-bold">📧</span>
+              <span class="small">@Html.DisplayFor(modelItem => branchDTO.ContactPersonFullName)</span>
+            </div>
+            <div class="float-left mr-3">
+              <span class="small font-weight-bold">@Html.DisplayNameFor(modelItem => branchDTO.Street):</span>
+              <span class="small">@Html.DisplayFor(modelItem => branchDTO.Street)</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</div>

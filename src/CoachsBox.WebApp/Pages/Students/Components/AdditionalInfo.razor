@@ -1,0 +1,91 @@
+﻿@using CoachsBox.WebApp.Areas.Identity.Data
+@using CoachsBox.WebApp.Pages.Students.Components.Documents
+
+@inherits OwningComponentBase
+
+<div class="card">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" id="studentPages" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="relatives-tab" data-toggle="tab" href="#relatives" role="tab" aria-controls="relatives" aria-selected="true">Родственники</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#documents" role="tab" aria-controls="relatives" aria-selected="true">
+          <!-- <i class="fas fa-exclamation-triangle text-warning mr-2"></i> - есть проблемы с документами -->
+          <!-- <i class="fas fa-exclamation-circle text-info mr-2"></i> - нет документов -->
+          <i class="fas fa-check-circle text-success mr-2"></i>Документы
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="tab-content" id="studentPagesContent">
+    <div class="tab-pane fade show active" id="relatives" role="tabpanel" aria-labelledby="relatives-tab">
+      <ul class="list-group list-group-flush">
+        @foreach (var relative in this.Student.Relatives)
+        {
+          <li class="list-group-item">
+            <!-- Фотка человека -->
+            <div class="float-left"></div>
+            <div>
+              <a asp-page="Relative" href="./Students/Relative?handler=Edit&studentId=@this.Student.StudentId&personId=@relative.PersonId&studentFullName=@this.Student.FullName">
+                @relative.PersonFullName
+              </a>
+              <div>
+                @if (!string.IsNullOrWhiteSpace(relative.Phone))
+                {
+                  <div class="float-left mr-3">
+                    <span class="small"><i class="fas fa-phone text-danger font-weight-bold mr-3"></i>@relative.Phone</span>
+                  </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(relative.Email))
+                {
+                  <div class="float-left mr-3">
+                    <span class="small"><i class="fas fa-at text-info font-weight-bold mr-3"></i>@relative.Email</span>
+                  </div>
+                }
+                <div class="float-left mr-3">
+                  <span class="small font-weight-bold">Родство:</span>
+                  <span class="small">@relative.RelationshipName</span>
+                </div>
+              </div>
+            </div>
+          </li>
+        }
+
+        @if (!this.Student.Relatives.Any())
+        {
+          <li class="list-group-item">
+            <h6 class="card-subtitle m-2 text-muted">Про родственников студента ничего не известно</h6>
+          </li>
+        }
+
+        <li class="list-group-item m-2">
+          <p class="card-text">
+            <!-- Button trigger modal -->
+            <a href="./Students/Relative?studentId=@this.Student.StudentId&studentFullName=@this.Student.FullName" class="card-link">
+              Добавить родственника
+            </a>
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div id="documents" class="tab-pane fade show" role="tabpanel" aria-labelledby="documents-tab">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <ApplicationView StudentId="Student.StudentId" Document="application" Changed="RefreshApplication" />
+        </li>
+        <li class="list-group-item">
+          <ContractView StudentId="Student.StudentId" Document="contract" Changed="RefreshContract" />
+        </li>
+        <li class="list-group-item">
+          <MedicalCertificateView StudentId="Student.StudentId" Document="medicalCertificate" Changed="RefreshMedicalCertificate" />
+        </li>
+        <li class="list-group-item">
+          <InsurancePolicyView StudentId="Student.StudentId" Document="insurancePolicy" Changed="RefreshInsurancePolicy" />
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

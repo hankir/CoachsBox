@@ -1,0 +1,85 @@
+﻿@page
+@model CoachsBox.WebApp.Pages.Groups.EditModel
+
+@{
+  ViewData["Title"] = "Edit";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Изменение группы</h1>
+<hr />
+<div class="row">
+  <div class="col-md-4">
+    <form method="post">
+      <input type="hidden" asp-for="UpdateCommand.GroupId" />
+
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+      <div class="form-group">
+        <label asp-for="UpdateCommand.Name" class="control-label"></label>
+        <input asp-for="UpdateCommand.Name" class="form-control" />
+        <span asp-validation-for="UpdateCommand.Name" class="text-danger"></span>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="UpdateCommand.ProgramId" class="control-label">@Html.DisplayNameFor(model => model.UpdateCommand.ProgramId)</label>
+        <select asp-for="UpdateCommand.ProgramId" class="form-control" asp-items="Model.ProgramList"></select>
+        <span asp-validation-for="UpdateCommand.ProgramId" class="text-danger" />
+      </div>
+
+      <div class="form-group">
+        <label asp-for="UpdateCommand.TariffId" class="control-label">@Html.DisplayNameFor(model => model.UpdateCommand.TariffId)</label>
+        <select asp-for="UpdateCommand.TariffId" class="form-control" asp-items="Model.TariffList"></select>
+        <span asp-validation-for="UpdateCommand.TariffId" class="text-danger" />
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">@Html.DisplayNameFor(model => model.Group.Branch)</label>
+        <div>
+          <a asp-page="../Branches/Details" asp-area="Admin" asp-route-branchId="@Model.Group.Branch.Id">@Html.DisplayFor(model => model.Group.Branch.Name)</a>
+        </div>
+      </div>
+
+      @if (this.Model.ScheduleId > 0)
+      {
+        <div class="form-group">
+          <label class="control-label">@Html.DisplayNameFor(model => model.CoachName)</label>
+          <div>
+            <a asp-page="../Coaches/Details" asp-area="Admin" asp-route-coachId="@Model.CoachId">@Html.DisplayFor(model => model.CoachName)</a>
+          </div>
+          <div>
+
+          </div>
+        </div>
+      }
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        @if (this.Model.ScheduleId > 0)
+        {
+          <a asp-page="../Schedules/Edit"
+             asp-route-scheduleId="@Model.ScheduleId"
+             class="btn btn-secondary">
+            Расписание
+          </a>
+        }
+        else
+        {
+          <a asp-page="../Schedules/Create"
+             asp-route-groupId="@Model.Group.Id"
+             class="btn btn-secondary">
+            Создать расписание
+          </a>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <a asp-page="./Index">Вернуться к списку групп</a>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,13 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+<!-- Дата рождения -->
+<div class="form-group">
+  <label asp-for="Birthdate"></label>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <div class="input-group-text"><i class="fas fa-birthday-cake text-success"></i></div>
+    </div>
+    <input asp-for="Birthdate" type="date" class="form-control" />
+  </div>
+  <span asp-validation-for="Birthdate" class="text-danger"></span>
+</div>

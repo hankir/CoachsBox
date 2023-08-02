@@ -1,0 +1,48 @@
+﻿@page
+
+@using Microsoft.Extensions.Localization;
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using CoachsBox.WebApp.Resources
+@using CoachsBox.WebApp.Pages.Groups.Components
+
+@inject IStringLocalizer<SharedResource> Localizer
+
+@model CoachsBox.WebApp.Pages.Groups.DetailsModel
+
+@{
+  Response.Headers["Cache-Control"] = "no-store";
+
+  ViewData["Title"] = this.Model.Group.GroupName;
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+  var groupId = this.Model.Group.GroupId;
+
+  var currentDate = this.User.GetUserNow();
+
+  var year = this.Model.Year ?? currentDate.Year;
+  var month = this.Model.Month ?? currentDate.Month;
+  var showAllStudents = this.Model.ShowAllStudents;
+  var paymentsEndPeriod = this.Model.PaymentsEndPeriod;
+}
+
+<div class="d-flex justify-content-between align-items-center">
+  <h3>@ViewData["Title"]</h3>
+
+  @if (this.User.IsInRole(CoachsBoxWebAppRole.Administrator))
+  {
+    <a asp-page="./Edit" asp-route-groupId="@Model.Group.GroupId">Изменить</a>
+  }
+</div>
+<div>
+  <hr />
+  <component type="typeof(GroupCard)"
+             render-mode="ServerPrerendered"
+             param-GroupId="groupId"
+             param-Month="month"
+             param-Year="year"
+             param-ShowAllStudents="showAllStudents"
+             param-PaymentsEndPeriod="paymentsEndPeriod" />
+</div>
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

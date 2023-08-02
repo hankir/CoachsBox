@@ -1,0 +1,46 @@
+﻿@{
+  var balance = this.Balance;
+  var financialInformation = this.ZeroBalanceText;
+  var textColor = "text-muted";
+  var totalBalanceInformation = string.Empty;
+  var textSizeClass = string.Empty;
+  if (balance == null)
+  {
+    financialInformation = string.IsNullOrWhiteSpace(this.NullBalanceText) ? "Еще не было начислений или платежей" : this.NullBalanceText;
+    textSizeClass = "small";
+  }
+  else
+  {
+    if (balance < 0)
+    {
+      financialInformation = $"{balance.Value.ToString("C").Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol, string.Empty)}";
+      textColor = "text-danger";
+    }
+    else if (balance > 0)
+    {
+      financialInformation = $"{balance.Value.ToString("C").Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol, string.Empty)}";
+      textColor = "text-success";
+    }
+    else
+    {
+      financialInformation = string.IsNullOrWhiteSpace(this.ZeroBalanceText) ? $"Нет долгов по группе" : this.ZeroBalanceText;
+      textSizeClass = "small";
+    }
+  }
+}
+
+<span style="cursor:pointer" class="@textColor @textSizeClass @this.TextClassName">@financialInformation</span>
+
+@code {
+  [Parameter]
+  public decimal? Balance { get; set; }
+
+  [Parameter]
+  public string NullBalanceText { get; set; }
+
+  [Parameter]
+  public string ZeroBalanceText { get; set; }
+
+  [Parameter]
+  public string TextClassName { get; set; }
+}

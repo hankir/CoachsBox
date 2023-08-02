@@ -1,0 +1,214 @@
+﻿@using System.Globalization
+@using Coaching.AttendanceLogModel
+@using Microsoft.Extensions.Localization
+@using CoachsBox.WebApp.Pages.Facade
+@using Microsoft.Extensions.DependencyInjection
+
+@inherits OwningComponentBase<IAttendanceLogServiceFacade>
+@if (this.attendanceLog != null)
+{
+  if (this.attendanceLog.RowsTitle.Count == 0)
+  {
+    <div class="m-3">
+      <span>В группе нет учеников</span>
+    </div>
+  }
+  else
+  {
+    var trainingCount = this.attendanceLog.ColumnsTitle.Count;
+    var width = $"min-width:{(100d / (trainingCount + 1)).ToString(System.Globalization.CultureInfo.InvariantCulture)}%";
+    string nameWidthMod;
+    if (trainingCount > 22)
+      nameWidthMod = "col-lg-2";
+    else if (trainingCount > 12)
+      nameWidthMod = "col-lg-3";
+    else
+      nameWidthMod = "col-lg-4";
+
+    var dateTimeFormat = CultureInfo.CurrentUICulture.DateTimeFormat;
+    var localizer = this.ScopedServices.GetRequiredService<IStringLocalizer<Resources.SharedResource>>();
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item pb-2">
+        <div class="row">
+          <div class="@nameWidthMod d-flex flex-column justify-content-around">
+            <div class="d-flex">
+              <div class="dropdown">
+                <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  @localizer[dateTimeFormat.GetMonthName(this.selectedMonth)]
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  @{
+                    for (int i = 1; i <= 12; i++)
+                    {
+                      var className = this.selectedMonth == i ? "dropdown-item active" : "dropdown-item";
+                      var selectMonth = i;
+                      <button class="@className" @onclick="@(async () => await this.SelectMonthAsync(selectMonth))">
+                        @localizer[dateTimeFormat.GetMonthName(i)]
+                      </button>
+                    }
+                  }
+                </div>
+              </div>
+
+              <div class="dropdown ml-2 mr-auto">
+                <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  @this.selectedYear
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  @for (int i = 2018; i < 2023; i++)
+                  {
+                    var className = this.selectedYear == i ? "dropdown-item active" : "dropdown-item";
+                    var selectYear = i;
+                    <button class="@className" @onclick="@(async () => await this.SelectYearAsync(selectYear))">
+                      @i
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="attendance-log-view-show-all-marked" @onchange="@(async (e) => await this.OnShowMarkedStudents(e))" checked="@showMarkedStudents" />
+              <label class="custom-control-label" for="attendance-log-view-show-all-marked">Показать исключенных</label>
+            </div>
+          </div>
+          <div class="col">
+            @if (this.attendanceLog.ColumnsTitle.Count == 0)
+            {
+              <span class="font-weight-bold">Расписание не заполнено</span>
+            }
+            else
+            {
+              <div class="d-flex">
+                @foreach (var attendanceColumn in this.attendanceLog.ColumnsTitle)
+                {
+                  var columnKey = $"attendance-view-column-{this.attendanceLog.ColumnsTitle.IndexOf(attendanceColumn)}";
+                  <div @key="columnKey" style="@width" class="text-center @(attendanceColumn.IsGhost ? "bg-light" : string.Empty)">
+                    <a data-toggle="modal" data-target="#trainingEditorModal"
+                       href="/Attendance/Edit?groupId=@this.attendanceLog.AttendanceLog.GroupId&date=@attendanceColumn.Date.ToString("d", CultureInfo.InvariantCulture.DateTimeFormat)&start=@attendanceColumn.Start&end=@attendanceColumn.End"
+                       @onclick:preventDefault="true"
+                       @onclick="@(() => this.ShowTrainingEditorModal(attendanceColumn))">
+                      <div>
+                        <span class="small">@(attendanceColumn.Date.Day)</span>
+                        @if (attendanceColumn.IsGhost)
+                        {
+                          <small>
+                            <i class="fas fa-exclamation-triangle text-warning" title="Тренировка в этот день отсутствует в расписании"
+                               style="position:absolute;top:0;margin-left:3px"></i>
+                          </small>
+                        }
+                      </div>
+                      <div><span class="small">@(attendanceColumn.Start.ToString("hh\\:mm"))</span></div>
+                      <div><span class="small">@(attendanceColumn.End.ToString("hh\\:mm"))</span></div>
+                    </a>
+                  </div>
+                }
+                @{
+                  var allMarksCount = this.CountAccountableMarks();
+                  var badgeColorClass = allMarksCount == 0 ? "badge-secondary" : "badge-info";
+                }
+                <div style="@width" class="text-center"><span style="margin-top:50%" class="badge badge-info">@allMarksCount</span></div>
+              </div>
+            }
+          </div>
+        </div>
+      </li>
+      @foreach (var student in this.attendanceLog.RowsTitle.OrderBy(s => s.StudentFullName))
+      {
+        var listItemClassName = student.Excluded ? "list-group-item list-group-item-warning" : "list-group-item";
+        <li @key="@($"attendance-view-row-{student.StudentId}")" class="@listItemClassName">
+          <div class="row">
+            <div class="@nameWidthMod text-truncate">
+              <a class="font-weight-bold" href="/Students/Details?studentId=@student.StudentId" title="@student.StudentFullName"
+                 target="_blank" rel="noopener noreferrer">@student.StudentShortName</a>
+            </div>
+            <div class="col">
+              <div class="d-flex">
+                @if (this.attendanceLog.ColumnsTitle.Count > 0)
+                {
+                  @foreach (var attendanceColumn in this.attendanceLog.ColumnsTitle)
+                  {
+                    var attendanceCell = this.attendanceLog.AttendanceLog.Entries
+                      .Where(e => e.StudentId == student.StudentId)
+                      .Where(e => e.Date == attendanceColumn.Date && e.Start == attendanceColumn.Start && e.End == attendanceColumn.End)
+                      .SingleOrDefault();
+                    <div style="@width" class="text-center @(attendanceColumn.IsGhost ? "bg-light" : string.Empty)">
+                      @if (attendanceCell != null)
+                      {
+                        var textClassName = "text-secondary";
+                        var labelIcon = string.Empty;
+                        var label = "Отметить";
+
+                        if (attendanceCell.AbsenceReason == null)
+                        {
+                          labelIcon = "fa-user-check";
+                          label = attendanceCell.IsTrial ? "Пробное занятие" : "Был";
+                          textClassName = attendanceCell.IsTrial ? "text-primary" : "text-success";
+                        }
+                        else if (attendanceCell.AbsenceReason == Absence.Sickness.Reason)
+                        {
+                          labelIcon = "fa-user-injured";
+                          label = "Болел";
+                          textClassName = "text-warning";
+                        }
+                        else if (attendanceCell.AbsenceReason == Absence.WithoutValidExcuse.Reason)
+                        {
+                          labelIcon = "fa-user-slash";
+                          label = "Не был";
+                          textClassName = "text-danger";
+                        }
+
+                        <i class="fas @labelIcon @textClassName small" title="@label"></i>
+                      }
+                      else
+                      {
+                        <i class="fas fa-minus text-secondary small"></i>
+                      }
+                    </div>
+                  }
+                  var studentMarksCount = this.CountStudentAccountableMarks(student.StudentId);
+                  var badgeColorClass = studentMarksCount == 0 ? "badge-secondary" : "badge-info";
+                  <div style="@width" class="text-center"><span class="badge @badgeColorClass">@studentMarksCount</span></div>
+                }
+              </div>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="modal fade" id="trainingEditorModal" tabindex="-1" aria-labelledby="trainingEditorModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="trainingEditorModalLabel">Журнал посещаемости группы "@this.attendanceLog.AttendanceLog.GroupName"</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    @onclick="@(async () => await this.CloseTrainingEditorModalAsync())">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            @if (this.showedTrainingTimeEditor != null)
+            {
+              <AttendanceLogEditor @key="@($"training-details-{this.showedTrainingTimeEditor.Date}-{this.showedTrainingTimeEditor.Start}-{this.showedTrainingTimeEditor.End}")"
+                                   HideHeader="true" TrainingInfo="this.showedTrainingTimeEditor" ShowAllStudents="this.showMarkedStudents" />
+            }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    @onclick="@(async () => await this.CloseTrainingEditorModalAsync())">
+              Закрыть
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}
+else
+{
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="spinner-border text-primary mr-3" role="status"></div>
+    <strong>Загрузка журнала...</strong>
+  </div>
+}

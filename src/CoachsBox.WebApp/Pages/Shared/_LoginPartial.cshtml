@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using System.Security.Claims
+@inject SignInManager<CoachsBoxWebAppUser> SignInManager
+@inject UserManager<CoachsBoxWebAppUser> UserManager
+
+<ul class="navbar-nav">
+  @if (SignInManager.IsSignedIn(User))
+  {
+    var name = this.User.FindFirst(ClaimTypes.GivenName);
+    var surname = this.User.FindFirst(ClaimTypes.Surname);
+    var userName = name == null && surname == null ? this.UserManager.GetUserName(this.User) : $"{surname?.Value} {name?.Value}";
+    <li class="nav-item">
+      <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Привет, @userName!</a>
+    </li>
+  }
+</ul>

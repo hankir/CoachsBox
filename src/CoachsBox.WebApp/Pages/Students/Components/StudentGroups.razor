@@ -1,0 +1,49 @@
+﻿@inherits OwningComponentBase
+
+@if (this.isGroupListLoading)
+{
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="spinner-border text-success mr-3" role="status"></div>
+    <strong>Загрузка списка групп...</strong>
+  </div>
+}
+else
+{
+  if (this.studentGroups.Any())
+  {
+    <ul class="list-group list-group-flush text-left">
+      @foreach (var group in this.studentGroups)
+      {
+        <li class="list-group-item">
+          <div>
+            <a class="font-weight-bold" href="./Groups/Details?groupId=@group.Id">@group.Name</a>
+            <div>
+              <div class="float-left mr-3">
+                <span class="small font-weight-bold text-secondary">Тренер:</span>
+                <span class="small">@group.Coach.FullName</span>
+              </div>
+              <div class="float-left mr-3">
+                <StudentsCount Count="@group.Students.Count" />
+              </div>
+              <div class="float-left mr-1">
+                <span class="small">Возраст от</span>
+                <span class="small">@group.MinAge</span>
+              </div>
+              @if (group.MinAge < 18)
+              {
+                <div class="float-left mr-3">
+                  <span class="small">до</span>
+                  <span class="small">@group.MaxAge</span>
+                </div>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  else
+  {
+    <h6 class="card-title text-center text-muted mt-3">Ученик не состоит в группах</h6>
+  }
+}

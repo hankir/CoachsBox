@@ -1,0 +1,8 @@
+﻿@inherits OwningComponentBase
+
+@if (!string.IsNullOrWhiteSpace(this.attendanceLogRestrictMessage))
+{
+  <div class="@this.ClassName alert @(this.canChangeAttendanceLog ? "alert-primary" : "alert-danger")">
+    @this.attendanceLogRestrictMessage
+  </div>
+}

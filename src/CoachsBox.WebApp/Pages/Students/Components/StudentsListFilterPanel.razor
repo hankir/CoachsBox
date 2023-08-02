@@ -1,0 +1,86 @@
+﻿@using CoachsBox.WebApp.Areas.Identity.Data
+
+<div class="card mb-2">
+  <div class="card-header">
+    <span class="h3">Ученики</span>
+    @if (this.HttpAccessor.HttpContext.User.IsInRole(CoachsBoxWebAppRole.Administrator))
+    {
+      <a class="float-right align-middle btn btn-success ml-2" href="/Students/Create">Добавить</a>
+    }
+    <button type="button"
+            class="float-right align-middle btn btn-primary"
+            data-toggle="modal"
+            data-target="#findBirthdayModal">
+      <i class="fas fa-birthday-cake text-warning mr-2"></i>Именинники
+    </button>
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" id="attendance-log-view-show-all-marked" @onchange="@(async (e) => await this.OnShowStudentsWithDebts(e))" checked="@this.filter.IsShowDebtsOnly" />
+      <label class="custom-control-label" for="attendance-log-view-show-all-marked">Показать только должников</label>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="form-row align-items-center">
+      <div class="col-sm-auto my-1">
+        <label class="mb-0">Ученик</label>
+      </div>
+      <div class="col-sm-5 my-1">
+        <input type="text" class="form-control form-control-sm"
+               @bind="this.filter.StudentName"
+               @bind:event="oninput"
+               @onkeydown="this.OnKeyDown"
+               placeholder="Введите ФИО ученика">
+      </div>
+
+      <div class="col-auto my-1">
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="this.OnFindByNameClick">Найти</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="findBirthdayModal" tabindex="-1" role="dialog" aria-labelledby="findBirthdayModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="findBirthdayModalLabel"><i class="fas fa-birthday-cake text-success mr-2"></i>Именинники</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group d-flex justify-content-center">
+            <button class="btn btn-sm btn-danger mx-1" @onclick="@(async () => await this.OnBirthdayChildsByPeriodClick(BirthdayPeriod.Today))" data-dismiss="modal">Сегодня</button>
+            <button class="btn btn-sm btn-warning mx-1" @onclick="@(async () => await this.OnBirthdayChildsByPeriodClick(BirthdayPeriod.Tomorrow))" data-dismiss="modal">Завтра</button>
+            <button class="btn btn-sm btn-success mx-1" @onclick="@(async () => await this.OnBirthdayChildsByPeriodClick(BirthdayPeriod.ThisWeek))" data-dismiss="modal">На этой неделе</button>
+            <button class="btn btn-sm btn-info mx-1" @onclick="@(async () => await this.OnBirthdayChildsByPeriodClick(BirthdayPeriod.ThisMonth))" data-dismiss="modal">В этом месяце</button>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label">Начало периода:</label>
+            <input type="date" class="form-control" value="@(this.filter?.BirthdayFrom != null ? this.filter?.BirthdayFrom.Value.ToString("yyyy-MM-dd") : null)" @onchange="this.OnBirthdayFromChanged" />
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Конец периода:</label>
+            <input type="date" class="form-control" value="@(this.filter?.BirthdayTo != null ? this.filter.BirthdayTo.Value.ToString("yyyy-MM-dd") : null)" @onchange="this.OnBirthdayToChanged" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary"
+                  disabled="@(this.filter.BirthdayFrom == null || this.filter.BirthdayTo == null)"
+                  @onclick="this.OnBirthdayChildsClick"
+                  data-dismiss="modal">
+            Найти
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(this.information))
+{
+  <div class="alert alert-primary mt-3" role="alert">
+    <span>@this.information</span>
+  </div>
+}

@@ -1,0 +1,112 @@
+﻿@inherits OwningComponentBase<CoachsBox.Coaching.StudentModel.IStudentRepository>
+
+<StudentsListFilterPanel InitialFilter="this.InitialFilter"
+                         FilterChanged="@(async (filter) => await this.OnFilterChanged(filter))" />
+
+@if (this.studentsList != null)
+{
+  @if (this.studentsList.Any())
+  {
+    <ul class="list-group">
+      @foreach (var studentDTO in this.studentsList)
+      {
+        <li class="list-group-item d-flex">
+          <div>
+            <a class="font-weight-bold" href="Students/Details?studentId=@studentDTO.StudentId">@studentDTO.Person.FullName</a>
+            <div>
+              @if (!string.IsNullOrWhiteSpace(studentDTO.Person.PhoneNumber))
+              {
+                <div class="float-left mr-3">
+                  <small><i class="fas fa-phone text-danger"></i></small>
+                  <small>@studentDTO.Person.PhoneNumber</small>
+                </div>
+              }
+              @if (!string.IsNullOrWhiteSpace(studentDTO.Person.Birthday))
+              {
+                <div class="float-left mr-3">
+                  <small><i class="fas fa-birthday-cake text-success"></i></small>
+                  <small>@studentDTO.Person.Birthday</small>
+                </div>
+              }
+              @if (!string.IsNullOrWhiteSpace(studentDTO.Person.Email))
+              {
+                <div class="float-left mr-3">
+                  <small><i class="fas fa-at text-info"></i></small>
+                  <small>@studentDTO.Person.Email</small>
+                </div>
+              }
+              @if (!string.IsNullOrWhiteSpace(studentDTO.Person.Address))
+              {
+                <div class="float-left mr-3">
+                  <small><i class="fas fa-map-marker-alt text-secondary"></i></small>
+                  <small>@studentDTO.Person.Address</small>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="flex-fill text-right m-auto">
+            <BalanceBadge Balance="@studentDTO.Balance" />
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  else
+  {
+    <div class="alert alert-warning mt-3" role="alert">
+      <span>@this.EmptyListMessage</span>
+    </div>
+  }
+}
+else
+{
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="spinner-border text-success mr-3" role="status"></div>
+    <strong>Загрузка списка учеников...</strong>
+  </div>
+}
+
+@{
+  var pagesCount = this.CountPages();
+  var previousButtonClass = this.CanPreviousPage() ? "page-item" : "page-item disabled";
+  var nextButtonClass = this.CanNextPage() ? "page-item" : "page-item disabled";
+  var disabledAttributes = new[]
+  {
+    new KeyValuePair<string,object>("disabled", true),
+    new KeyValuePair<string, object>("tabindex", -1),
+    new KeyValuePair<string, object>("aria-disabled", true)
+  };
+}
+@if (pagesCount > 1)
+{
+  <nav class="py-2" aria-label="Student list navigation">
+    <ul class="pagination justify-content-center flex-wrap pagination-row-spacing">
+      <li class="@previousButtonClass">
+        <button class="page-link"
+                @onclick="@(async () => await this.PreviousPage())"
+                @attributes="@(this.CanPreviousPage() ? null : disabledAttributes)">
+          Назад
+        </button>
+      </li>
+      @for (int i = 0; i < pagesCount; i++)
+      {
+        var page = i + 1;
+        if (page == this.currentPage)
+        {
+          <li class="page-item active"><button class="page-link">@(page)</button></li>
+        }
+        else
+        {
+          <li class="page-item"><button class="page-link" @onclick="@(async () => await this.MoveToPage(page))">@(page)</button></li>
+        }
+      }
+      <li class="@nextButtonClass">
+        <button class="page-link"
+                @onclick="@(async () => await this.NextPage())"
+                @attributes="@(this.CanNextPage() ? null : disabledAttributes)">
+          Вперед
+        </button>
+      </li>
+    </ul>
+  </nav>
+}

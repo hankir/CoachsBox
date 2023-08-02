@@ -1,0 +1,158 @@
+﻿@page
+@using CoachsBox.WebApp
+@model CoachsBox.WebApp.Areas.Admin.Pages.Payments.RecentModel
+@{
+  ViewData["Title"] = "Недавние платежи";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card mb-2">
+  <div class="card-header">
+    <span class="h3">@ViewData["Title"]</span>
+    <a class="float-right align-middle btn btn-success" asp-page="Index">Добавить</a>
+  </div>
+
+  <div class="card-body">
+    <form method="post">
+
+      <div class="form-row align-items-center">
+        <div class="col-sm-auto my-1">
+          <label class="mb-0" asp-for="StudentName">Ученик</label>
+        </div>
+        <div class="col-sm-5 my-1">
+          <input type="text" class="form-control form-control-sm" asp-for="StudentName" placeholder="Введите ФИО ученика">
+        </div>
+
+        <div class="col-auto my-1">
+          <button type="submit" class="btn btn-secondary btn-sm">Найти</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ul class="list-group">
+  @foreach (var payment in this.Model.Payments)
+  {
+    <li class="list-group-item">
+      <div class="d-flex">
+        <div class="flex-grow-1">
+          <a target="_blank" class="font-weight-bold" asp-page="/Students/Details" asp-route-studentId="@payment.StudentId">@Html.DisplayFor(model => payment.StudentName)</a>
+          <div class="row">
+            <div class="col-sm-1 mr-3">
+              <span class="small font-weight-bold text-success"><i class="fas fa-ruble-sign"></i></span>
+              <span class="small">@Html.DisplayFor(modelItem => payment.Amount)</span>
+            </div>
+            <div class="col-sm-2 mr-3">
+              <span class="small font-weight-bold text-info"><i class="fas fa-history"></i></span>
+              <span class="small">@Html.DisplayUserDateTimeFor(this.User, payment.WhenOccured)</span>
+            </div>
+            <div class="col-sm-3 mr-3">
+              <span class="small font-weight-bold text-secondary">Группа:</span>
+              <span class="small text-secondary">@Html.DisplayFor(model => payment.GroupName)</span>
+            </div>
+
+            @if (payment.IsProcessed)
+            {
+              <div class="col-sm-3 mr-3">
+                <span class="badge badge-success">Принят:</span>
+                <span class="small">@Html.DisplayUserDateTimeFor(this.User, payment.WhenProcessed)</span>
+              </div>
+            }
+            else
+            {
+              <div class="col-sm-3">
+                <span class="badge badge-warning">Зарегистрирован:</span>
+                <span class="small">@Html.DisplayUserDateTimeFor(this.User, payment.WhenNoticed)</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <div class="btn-group-sm">
+            <button class="btn btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-ellipsis-v text-secondary"></i>
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-right">
+              <button class="dropdown-item btn-light" data-toggle="modal" data-target="#confirmDeletePayment"
+                      data-paymentby="@payment.StudentName"
+                      data-paymentdate="@payment.WhenOccured"
+                      data-paymentamount="@payment.Amount"
+                      data-paymentgroup="@payment.GroupName"
+                      data-paymentstudentid="@payment.StudentId"
+                      data-paymentid="@payment.PaymentId">
+                <i class="fas fa-trash-alt text-danger mr-2"></i>Удалить платеж
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  }
+</ul>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmDeletePayment" tabindex="-1" aria-labelledby="confirmDeletePaymentLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeletePaymentLabel">Подтвердите удаление платежа</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <a id="payment-by" target="_blank" class="font-weight-bold" href="#"></a>
+          <div class="row">
+            <div class="small col-auto mr-3">
+              <span class="font-weight-bold text-success"><i class="fas fa-ruble-sign"></i></span>
+              <span id="payment-amount"></span>
+            </div>
+            <div class="small col-auto mr-3">
+              <span class="font-weight-bold text-info"><i class="fas fa-history"></i></span>
+              <span id="payment-date"></span>
+            </div>
+            <div class="small col-auto mr-3">
+              <span class="font-weight-bold text-secondary">Группа:</span>
+              <span id="payment-group" class="text-secondary"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <form method="post">
+          <input type="hidden" asp-for="StudentName" />
+          <button id="deleteButton" type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <script type="text/javascript">
+    require(["jquery"], ($) => {
+      $('#confirmDeletePayment').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var paymentId = button.data('paymentid');
+        var paymentby = button.data('paymentby');
+        var paymentdate = button.data('paymentdate');
+        var paymentamount = button.data('paymentamount');
+        var paymentgroup = button.data('paymentgroup');
+        var paymentstudentid = button.data('paymentstudentid');
+        var modal = $(this);
+        
+        modal.find('#payment-by').text(paymentby);
+        modal.find('#payment-by').attr('href', '/Students/Details?studentId=' + paymentstudentid);
+        modal.find('#payment-amount').text(parseFloat(paymentamount).toFixed(2).toLocaleString());
+        modal.find('#payment-date').text(paymentdate);
+        modal.find('#payment-group').text(paymentgroup);
+        modal.find('#deleteButton').attr('formaction', '/Admin/Payments/Recent?paymentId=' + paymentId + '&handler=DeletePayment');
+      });
+    });
+  </script>
+}

@@ -1,0 +1,60 @@
+﻿@using Microsoft.Extensions.Configuration
+@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+
+@model CreatePersonCommand
+@inject IConfiguration Configuration
+
+@{
+  var daDataAPIKey = this.Configuration.GetDaDataAPIKey();
+  var isDaDataEnable = !string.IsNullOrWhiteSpace(daDataAPIKey);
+}
+
+@if (isDaDataEnable)
+{
+  <script>
+    require(['suggestions-jquery'], function () {
+      const countryId = "#@Html.IdFor(model => model.Address.Country)";
+      const regionId = "#@Html.IdFor(model => model.Address.State)";
+      const cityId = "#@Html.IdFor(model => model.Address.City)";
+      const streetId = "#@Html.IdFor(model => model.Address.Street)";
+      const zipId = "#@Html.IdFor(model => model.Address.ZipCode)";
+
+      $("#address").suggestions({
+        token: "@daDataAPIKey",
+        type: "ADDRESS",
+        hint: null,
+        onSearchError: function (s) {
+          $("#address").prop("disabled", true);
+          $("#address").val("");
+          $("#address").attr("placeholder", "Сервис поиска адресов не доступен, введите адрес ниже");
+          $("#FullAddress").removeClass("collapse");
+          $("#FullAddress").addClass("show");
+        },
+        /* Вызывается, когда пользователь выбирает одну из подсказок */
+        onSelect: function (suggestion) {
+          var city = suggestion.data.settlement_with_type != null ? suggestion.data.settlement_with_type : suggestion.data.city_with_type;
+          if (suggestion.data.area_with_type != null && suggestion.data.city == null)
+            city = suggestion.data.area_with_type + ", " + city;
+          const house = suggestion.data.house != null ? ", " + suggestion.data.house_type + " " + suggestion.data.house : "";
+          const flat = suggestion.data.flat != null ? ", " + suggestion.data.flat_type + " " + suggestion.data.flat : "";
+          $(countryId).val(suggestion.data.country);
+          $(regionId).val(suggestion.data.region_with_type);
+          $(cityId).val(city);
+          $(streetId).val(suggestion.data.street_with_type != null ? suggestion.data.street_with_type + house + flat : "");
+          $(zipId).val(suggestion.data.postal_code);
+        }
+      });
+
+      $("#address").on("change paste keyup", function () {
+        var addressText = $("#address").val();
+        if (!addressText) {
+          $(countryId).val('');
+          $(regionId).val('');
+          $(cityId).val('');
+          $(streetId).val('');
+          $(zipId).val('');
+        }
+      });
+    });
+  </script>
+}

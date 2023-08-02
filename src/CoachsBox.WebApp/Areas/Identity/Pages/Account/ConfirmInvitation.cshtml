@@ -1,0 +1,28 @@
+﻿@page
+@model ConfirmInvitationModel
+@{
+  ViewData["Title"] = "Приглашение в цифровую тренерскую";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h6>Укажите пароль для вашей учетной записи</h6>
+<div>
+  <div class="col-md-4">
+    <form method="post" autocomplete="off">
+      <div asp-validation-summary="All" class="text-danger"></div>
+      <input asp-for="Input.Code" type="hidden" />
+      <input asp-for="Input.UserId" type="hidden" />
+      <div class="form-group">
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="Input.ConfirmPassword"></label>
+        <input asp-for="Input.ConfirmPassword" class="form-control" />
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+      </div>
+      <button type="submit" class="btn btn-primary">Установить пароль и продолжить</button>
+    </form>
+  </div>
+</div>

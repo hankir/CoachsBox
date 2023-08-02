@@ -1,0 +1,6 @@
+# Declare files that will always have CRLF line endings on checkout.
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.cs text eol=crlf
+*.cshtml.cs text eol=crlf
+*.razor text eol=crlf

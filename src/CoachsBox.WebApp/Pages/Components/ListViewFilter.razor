@@ -1,0 +1,50 @@
+﻿@typeparam TFilterItem
+
+<div class="btn-group btn-group-sm">
+  <button class="btn btn-link btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    @this.Title
+  </button>
+  <div class="dropdown-menu dropdown-menu-right">
+    @if (this.Items.Any())
+    {
+      <a class="dropdown-item" @onclick="this.ClearFilterClick" @onclick:preventDefault href="">
+        <i class="fas fa-times text-danger mr-2"></i>Убрать фильтр
+      </a>
+      <div class="dropdown-divider"></div>
+      @foreach (var filterItem in this.Items)
+      {
+        <a class="dropdown-item" @onclick="async () => await this.FilterClick.InvokeAsync(filterItem)" @onclick:preventDefault href="">
+          @if (this.ItemTemplate != null)
+          {
+            @this.ItemTemplate(filterItem)
+          }
+          else
+          {
+            <span>@filterItem</span>
+          }
+        </a>
+      }
+    }
+    else
+    {
+      <div class="dropdown-item disabled"><span class="text-muted">Нет тренеров</span></div>
+    }
+  </div>
+</div>
+
+@code {
+  [Parameter]
+  public RenderFragment<TFilterItem> ItemTemplate { get; set; }
+
+  [Parameter]
+  public IReadOnlyList<TFilterItem> Items { get; set; }
+
+  [Parameter]
+  public EventCallback<TFilterItem> FilterClick { get; set; }
+
+  [Parameter]
+  public EventCallback ClearFilterClick { get; set; }
+
+  [Parameter]
+  public string Title { get; set; }
+}

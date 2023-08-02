@@ -1,0 +1,120 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using CoachsBox.WebApp.Pages.Components
+@inject IAuthorizationService AuthorizationService
+
+@model CoachsBox.WebApp.Pages.Groups.IndexModel
+
+@{
+  ViewData["Title"] = "Группы";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">@ViewData["Title"]</span>
+    @if ((await AuthorizationService.AuthorizeAsync(this.User, CoachsBoxWebAppRole.AdministratorPolicyName)).Succeeded)
+    {
+      <a class="float-right align-middle btn btn-success" asp-page="Create">Добавить</a>
+    }
+  </div>
+  @if (this.Model.Groups.Any())
+  {
+    <ul class="list-group list-group-flush">
+      @foreach (var groupDTO in Model.Groups.OrderBy(group => group.Name))
+      {
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col col-md ">
+              <a class="font-weight-bold" asp-page="./Details" asp-route-groupId="@groupDTO.Id">@Html.DisplayFor(modelItem => groupDTO.Name)</a>
+              <div>
+                <div class="float-left mr-3">
+                  @(await this.Html.RenderComponentAsync<StudentsCount>(RenderMode.Static, new { Count = groupDTO.Students.Count }))
+                </div>
+                <div class="float-left mr-1">
+                  <span class="small">@Html.DisplayNameFor(modelItem => groupDTO.MinAge)</span>
+                  <span class="small">@Html.DisplayFor(modelItem => groupDTO.MinAge)</span>
+                </div>
+                @if (groupDTO.MinAge < 18)
+                {
+                  <div class="float-left mr-3">
+                    <span class="small">@Html.DisplayNameFor(modelItem => groupDTO.MaxAge)</span>
+                    <span class="small">@Html.DisplayFor(modelItem => groupDTO.MaxAge)</span>
+                  </div>
+                }
+              </div>
+            </div>
+            @if ((await AuthorizationService.AuthorizeAsync(this.User, CoachsBoxWebAppRole.AdministratorPolicyName)).Succeeded)
+            {
+              <div class="col-auto d-flex">
+                <div class="d-flex align-items-center">
+                  <div class="ml-2 btn-group-sm">
+                    <button class="btn btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v text-secondary"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <button class="dropdown-item btn-light" data-toggle="modal" data-target="#confirmDeleteGroup"
+                              data-groupname="@groupDTO.Name"
+                              data-groupid="@groupDTO.Id">
+                        <i class="fas fa-trash-alt text-danger mr-2"></i>Удалить группу
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  else
+  {
+    <div class="p-3">
+      <span>У вас пока нет групп</span>
+    </div>
+  }
+</div>
+
+<div class="modal fade" id="confirmDeleteGroup" tabindex="-1" aria-labelledby="confirmDeleteGroupLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteGroupLabel">Подтвердите удаление группы</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          Группа <a id="group-name" target="_blank" class="font-weight-bold" href="#"></a>, её расписание, журнал посещений и история транзакций будут удалены без возможности восстановления.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <form method="post">
+          <button id="deleteButton" type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <script type="text/javascript">
+    require(["jquery"], ($) => {
+      $('#confirmDeleteGroup').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var groupId = button.data('groupid');
+        var groupName = button.data('groupname');
+
+        var modal = $(this);
+
+        modal.find('#group-name').text(groupName);
+        modal.find('#group-name').attr('href', '/Groups/Details?groupId=' + groupId);
+        modal.find('#deleteButton').attr('formaction', '/Groups/Index?groupId=' + groupId + '&handler=Delete');
+      });
+    });
+  </script>
+}

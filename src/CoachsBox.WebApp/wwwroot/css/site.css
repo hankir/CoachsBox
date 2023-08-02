@@ -1,0 +1,208 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+/* The sticky class is added to the header with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 666;
+}
+
+  /* Add some top padding to the page content to prevent sudden quick movement (as the header gets a new position at the top of the page (position:fixed and top:0) */
+  .sticky + .container {
+    padding-top: 73px;
+  }
+
+.command-icon {
+  text-decoration: none !important;
+}
+
+/* Ждем исправления https://github.com/twbs/bootstrap/issues/31037 */
+.card > .list-group {
+  border-top: 0 !important;
+}
+
+#blazor-error-ui {
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+  #blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+  }
+
+/* Стили для модального представления сообщений об ошибках подключения к серверу. */
+#components-reconnect-modal {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 1000;
+  display: none;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-weight: bold;
+}
+  /* Основное сообщение. Стиль по-умолчанию. */
+  #components-reconnect-modal > .reconnecting {
+    display: none;
+  }
+
+  /* Подключение к серверу провалилось. Стиль по-умолчанию.  */
+  #components-reconnect-modal > .failed {
+    display: none;
+  }
+
+  /* Подключение к серверу появилось, но было отклонено. Стиль по-умолчанию.  */
+  #components-reconnect-modal > .rejected {
+    display: none;
+  }
+
+  /* Стили сообщенией, когда модальное представление показано. */
+  #components-reconnect-modal.components-reconnect-show {
+    display: block !important;
+  }
+
+    #components-reconnect-modal.components-reconnect-show > .reconnecting {
+      display: block;
+    }
+
+  #components-reconnect-modal.components-reconnect-rejected {
+    display: block;
+  }
+
+    #components-reconnect-modal.components-reconnect-rejected > .rejected {
+      display: block;
+    }
+
+  #components-reconnect-modal.components-reconnect-failed {
+    display: block;
+  }
+
+    #components-reconnect-modal.components-reconnect-failed > .failed {
+      display: block;
+    }
+
+.fade-in {
+  opacity: 1;
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 1s;
+}
+
+  .fade-in.animation-step-end {
+    animation-timing-function: step-end !important;
+  }
+
+  .fade-in.animation-500-ms {
+    animation-duration: 0.5s;
+  }
+
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-out {
+  visibility: collapse;
+  animation-name: fadeOutOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-duration: 1s;
+}
+
+@keyframes fadeOutOpacity {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: collapse;
+  }
+}
+
+.alert .validation-summary-errors > ul, li {
+  display: block;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.pagination-row-spacing li.page-item {
+  margin-top: 4px;
+}

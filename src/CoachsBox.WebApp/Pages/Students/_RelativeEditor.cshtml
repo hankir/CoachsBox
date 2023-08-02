@@ -1,0 +1,38 @@
+﻿@using CoachsBox.WebApp.AppFacade.Students.Commands
+@model AddOrUpdateStudentRelativeCommand
+
+@{
+  var relationshipList = new RelationshipList();
+}
+
+<div class="form-row">
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Surname" model="@this.Model" />
+  </div>
+  <div class="col-md">
+    <partial name="PersonEditorsPartial/Name" model="@this.Model" />
+  </div>
+</div>
+
+<partial name="PersonEditorsPartial/Patronymic" model="@this.Model" />
+
+<!-- Родство -->
+<div class="form-group">
+  <label asp-for="Relationship" class="control-label">@Html.DisplayNameFor(model => model.Relationship)</label>
+  <select asp-for="Relationship" class="form-control" asp-items="@relationshipList"></select>
+  <span asp-validation-for="Relationship" class="text-danger"></span>
+</div>
+
+<partial name="PersonEditorsPartial/Phone" model="@this.Model" />
+
+<div class="form-group">
+  <a data-toggle="collapse" href="#AdditionalInfo" role="button" aria-expanded="false" aria-controls="AdditionalInfo">
+    Указать дополнительную информацию
+  </a>
+
+  <div class="collapse" id="AdditionalInfo">
+    <partial name="PersonEditorsPartial/Birthdate" model="@this.Model" />
+    <partial name="PersonEditorsPartial/Address" model="@this.Model" />
+    <partial name="PersonEditorsPartial/Email" model="@this.Model" />
+  </div>
+</div>

@@ -1,0 +1,31 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Tariffs.DetailsModel
+@{
+  ViewData["Title"] = "Тариф";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h3>@Model.Tariff.Description</h3>
+
+<div>
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-3">
+      @Html.DisplayNameFor(model => model.Tariff.TrainingRate)
+    </dt>
+    <dd class="col-sm-9">
+      <i class="fas fa-ruble-sign text-success"></i>
+      @Html.DisplayFor(model => model.Tariff.TrainingRate)
+    </dd>
+    <dt class="col-sm-3">
+      @Html.DisplayNameFor(model => model.Tariff.AccrualType)
+    </dt>
+    <dd class="col-sm-9">
+      @Html.DisplayFor(model => model.Tariff.AccrualType.AccrualTypeName)
+    </dd>
+  </dl>
+</div>
+<div>
+  <a asp-page="./Edit" asp-route-tariffId="@Model.Tariff.AgreementId">Изменить</a> |
+  <a asp-page="./Index">Назад к списку</a>
+</div>

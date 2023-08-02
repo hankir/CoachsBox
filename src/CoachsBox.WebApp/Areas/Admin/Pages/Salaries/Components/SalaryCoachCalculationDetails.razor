@@ -1,0 +1,47 @@
+﻿@using System.Globalization
+@using CoachsBox.WebApp.AppFacade.Accounting
+
+@inherits OwningComponentBase<ISalaryServiceFacade>
+
+@if (this.calculations.Any())
+{
+  <table class="table table-sm table-hover table-borderless">
+    <thead>
+      <tr>
+        <th scope="col" class="small font-weight-bold w-25">Группа</th>
+        <th scope="col" class="small font-weight-bold">Отмечено</th>
+        <th scope="col" class="small font-weight-bold">Отметок не оплачено</th>
+        <th scope="col" class="small font-weight-bold">Стоимость</th>
+        <th scope="col" class="small font-weight-bold">Начислено</th>
+        <th scope="col" class="small font-weight-bold">К выдаче</th>
+        <th scope="col" class="small font-weight-bold">Основание</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var calculation in this.calculations.OrderBy(c => c.GroupName))
+      {
+        var trClassName = calculation.DebtTrainingCount > 0 && !calculation.IsDebt ?
+          "list-group-item-warning" : calculation.IsDebt && calculation.DebtTrainingCount > 0 ?
+          "list-group-item-danger" : string.Empty;
+
+        <tr @key="calculation.Id" class="@trClassName">
+          <td class="align-middle">
+            <a href="/Groups/Details?groupId=@calculation.GroupId&year=@this.PeriodBeginning.Year&month=@this.PeriodBeginning.Month&showAllStudents=true&paymentsEndPeriod=@(this.PaymentsEndPeriod.Date.ToString("d", CultureInfo.InvariantCulture.DateTimeFormat))" target="_blank">
+              @calculation.GroupName
+            </a>
+          </td>
+          <td class="align-middle"><span class="badge badge-success">@calculation.TrainingCount</span></td>
+          <td class="align-middle"><span class="badge badge-danger">@calculation.DebtTrainingCount</span></td>
+          <td class="align-middle"><BalanceBadge Balance="@calculation.TrainingCost" ZeroBalanceText="Бесплатно" /></td>
+          <td class="align-middle"><BalanceBadge Balance="@calculation.Amount" ZeroBalanceText="-" /></td>
+          <td class="align-middle"><BalanceBadge Balance="@calculation.AmountToIssued" ZeroBalanceText="-" /></td>
+          <td class="text-muted small w-25 align-middle">@calculation.Description</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+else
+{
+  <span>Нет начислений</span>
+}

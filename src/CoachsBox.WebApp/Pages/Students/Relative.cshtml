@@ -1,0 +1,29 @@
+﻿@page
+@model CoachsBox.WebApp.AddRelativeModel
+@{
+  ViewData["Title"] = this.Model.Title;
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h6 class="text-muted">
+  Для студента @this.Model.StudentFullName
+</h6>
+<hr />
+<div class="row">
+  <form method="post" class="col col-sm col-md col-xl-6 col-lg-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    @Html.HiddenFor(model => model.Command.StudentId)
+
+    <partial name="_RelativeEditor" for="Command" />
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">@this.Model.SubmitButtonTitle</button>
+      <a asp-page="./Details" asp-route-studentId="@this.Model.Command.StudentId" class="btn btn-secondary">Отменить</a>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <partial name="PersonEditorsPartial/AddressScripts" for="Command" />
+}

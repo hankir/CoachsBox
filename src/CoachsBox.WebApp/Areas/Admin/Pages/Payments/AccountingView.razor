@@ -1,0 +1,138 @@
+﻿@using CoachsBox.WebApp.Areas.Admin.Facade.DTO;
+
+@inherits OwningComponentBase
+
+<div class="card">
+  <div class="card-header">
+    <span class="h3">Отчетность</span>
+  </div>
+
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="form-inline">
+        <div class="form-group">
+          <label class="col-form-label">Начало периода</label>
+          <input class="form-control form-control-sm mx-3" type="date" @bind="from" />
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Конец периода</label>
+          <input class="form-control form-control-sm mx-3" type="date" @bind="to" />
+        </div>
+        <div class="form-group">
+          @{
+            <button class="float-right align-middle btn btn-primary btn-sm" @onclick="@(async () => await this.OnShowGroupBalanceClick())"
+                    disabled="@(this.isLoading || !(this.from.HasValue && this.to.HasValue && this.from < this.to))">
+              @if (this.isLoading)
+              {
+                <div class="spinner-border spinner-border-sm text-white mr-2" role="status"></div>
+              }
+              Показать
+            </button>
+          }
+        </div>
+      </div>
+      <div>
+        <ListViewFilter TFilterItem="CoachDTO" Title="Тренер" Items="this.allowedCoaches" ClearFilterClick="this.ClearCoachFilter" FilterClick="this.OnChangeCoach">
+          <ItemTemplate>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="dropdownCheck" style="margin-top:6px" checked="@(this.selectedCoaches.Contains(context.Id))">
+              <label class="form-check-label" for="dropdownCheck" @onclick:preventDefault style="cursor:pointer">
+                @context.FullName
+              </label>
+            </div>
+          </ItemTemplate>
+        </ListViewFilter>
+        <ListViewFilter TFilterItem="BranchDTO" Title="Филиал" Items="this.allowedBranches" ClearFilterClick="this.ClearBranchFilter" FilterClick="this.OnChangeBranch">
+          <ItemTemplate>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="dropdownCheck" style="margin-top:6px" checked="@(this.selectedBranches.Contains(context.Id))">
+              <label class="form-check-label" for="dropdownCheck" @onclick:preventDefault style="cursor:pointer">
+                @context.City
+              </label>
+            </div>
+          </ItemTemplate>
+        </ListViewFilter>
+      </div>
+    </div>
+    @if (this.selectedCoaches.Any())
+    {
+      <div class="mt-2">
+        @foreach (var selectedCoach in this.allowedCoaches.Where(coach => this.selectedCoaches.Contains(coach.Id)))
+        {
+          <span class="badge badge-warning mr-1">@selectedCoach.ShortName</span>
+        }
+      </div>
+    }
+    @if (this.selectedBranches.Any())
+    {
+      <div class="mt-2">
+        @foreach (var selectedBranch in this.allowedBranches.Where(branch => this.selectedBranches.Contains(branch.Id)))
+        {
+          <span class="badge badge-info mr-1">@selectedBranch.City</span>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+@{
+  var filteredBalances = this.FilteredGroupBalances();
+}
+
+@if (filteredBalances.Count > 0)
+{
+  <div class="alert alert-info my-2" role="alert">
+    <div class="d-flex justify-content-between">
+      <div>
+        <a href="" @onclick="this.OnAllTariffClick" @onclick:preventDefault class="badge @(this.tariff == null ? "badge-success" : "badge-secondary") px-2 py-1 mr-1">Все тарифы</a>
+        @if (this.allowedTariffs.Count > 1)
+        {
+          @foreach (var existTariff in this.allowedTariffs)
+          {
+            <a href="" @onclick="@(() => this.OnTariffClick(existTariff))" @onclick:preventDefault class="badge @(this.tariff == existTariff ? "badge-success" : "badge-secondary") px-2 py-1 mr-1">@existTariff</a>
+          }
+        }
+      </div>
+      <div class="d-flex flex-column flex-fill flex-shrink-0 align-items-end">
+        <span class="font-weight-bold">Общая сумма:</span>
+        <div class="d-flex align-items-center">
+          <BalanceBadge Balance="@this.totalIncome" ZeroBalanceText="Нет платежей" TextClassName="font-weight-bold" /><span class="px-1">/</span>
+          <BalanceBadge Balance="@(this.totalDebts)" ZeroBalanceText="Нет долгов" TextClassName="font-weight-bold" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="list-group">
+    @foreach (var balance in filteredBalances)
+    {
+      <li @key="balance.GroupId" class="list-group-item">
+        <div class="row">
+          <div class="col">
+            <div>
+              <a class="font-weight-bold" href="/Groups/Details?groupId=@balance.GroupId" target="_blank">@balance.GroupName</a>
+            </div>
+            <div>
+              <small class="text-secondary mr-3">@balance.AgreementName</small>
+              <small class="text-secondary"><i class="fas fa-map-marker-alt text-secondary mr-1"></i>@balance.BranchCity</small>
+            </div>
+          </div>
+          <div class="col-auto d-flex align-items-center justify-content-end">
+            <div class="d-flex align-items-center">
+              <BalanceBadge Balance="@balance.Income" ZeroBalanceText="Нет платежей" NullBalanceText="Нет данных" /><span class="px-1">/</span>
+              <BalanceBadge Balance="@(balance.Depts)" ZeroBalanceText="Нет долгов" NullBalanceText="Нет долгов" />
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+}
+else
+{
+  <div class="alert alert-info my-2 fade-in" role="alert">
+    <div class="d-flex justify-content-between">
+      <span class="text-muted">Нет данных</span>
+    </div>
+  </div>
+}

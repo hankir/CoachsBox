@@ -1,0 +1,17 @@
+﻿@using CoachsBox.WebApp.AppFacade.Primitives.Commands
+@model CreatePersonCommand
+<!-- Пол -->
+<div class="form-group">
+  <label asp-for="Gender"></label>
+
+  <div class="form-group">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+      <label class="btn btn-light @(this.Model.Gender == "Male" ? "active" : null)">
+        <input asp-for="Gender" type="radio" value="Male" />Мужской
+      </label>
+      <label class="btn btn-light @(this.Model.Gender == "Female" ? "active" : null)">
+        <input asp-for="Gender" type="radio" value="Female" />Женский
+      </label>
+    </div>
+  </div>
+</div>

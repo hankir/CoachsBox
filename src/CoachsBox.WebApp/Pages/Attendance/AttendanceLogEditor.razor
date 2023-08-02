@@ -1,0 +1,142 @@
+﻿@using Coaching.AttendanceLogModel
+@using CoachsBox.WebApp.Pages.Facade
+@using CoachsBox.WebApp.Areas.Identity.Data
+
+@inherits OwningComponentBase<IAttendanceLogServiceFacade>
+
+@{
+  var date = this.TrainingInfo.Date;
+  var start = this.TrainingInfo.Start;
+  var end = this.TrainingInfo.End;
+}
+
+@if (this.groupAttendance != null)
+{
+  var studentsWithoutAttendance = this.groupAttendance.Entries.Count(studentAttendance => !studentAttendance.IsExists);
+
+  @if (!this.HideHeader)
+  {
+    <h4>Журнал посещаемости группы "@this.groupAttendance.GroupName"</h4>
+  }
+  <h6 class="d-flex flex-grow-1 justify-content-between align-items-center mb-3">
+    <span class="text-muted">Тренировка @date.ToLongDateString() с @start.ToString("hh\\:mm") по @end.ToString("hh\\:mm")</span>
+    @if (this.groupAttendance.Entries.Count > 0 && this.canChangeAttendanceLog)
+    {
+      if (studentsWithoutAttendance > 0)
+      {
+        <div class="btn-group-sm">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Отметить (@studentsWithoutAttendance)
+          </button>
+
+          <div class="dropdown-menu">
+            <button class="dropdown-item" @onclick="@(async () => await this.OnMarkAll())"><i class="fas fa-user-check text-success mr-2"></i>Был</button>
+            <button class="dropdown-item" @onclick="@(async () => await this.OnMarkAll(Absence.WithoutValidExcuse.Reason))"><i class="fas fa-user-slash text-danger mr-2"></i>Не был</button>
+            <button class="dropdown-item" @onclick="@(async () => await this.OnMarkAll(Absence.Sickness.Reason))"><i class="fas fa-user-injured text-warning mr-2"></i>Болел</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" @onclick="@(async () => await this.OnClearAllMark())"><i class="fas fa-times text-secondary mr-2"></i>Очистить</button>
+          </div>
+        </div>
+      }
+      else
+      {
+        <button class="btn btn-light btn-sm" @onclick="@(async () => await this.OnClearAllMark())">
+          <i class="fas fa-times text-danger mr-2"></i>Очистить (@this.groupAttendance.Entries.Count)
+        </button>
+      }
+    }
+  </h6>
+
+  <CascadingAuthenticationState>
+    <AuthorizeView Roles="@CoachsBoxWebAppRole.Coach">
+      <AttendanceLogRestrictionMessage ClassName="mb-2" CheckedDate="endOfTraining" />
+    </AuthorizeView>
+  </CascadingAuthenticationState>
+
+  @if (this.groupAttendance.Entries.Count > 0)
+  {
+    <ul class="list-group mb-3">
+      @foreach (var studentAttendance in this.groupAttendance.Entries.OrderBy(s => s.StudentFullName))
+      {
+        var listItemClassName = studentAttendance.Excluded ? "list-group-item list-group-item-warning" : "list-group-item";
+        <li @key="@($"attendance-editor-row-{studentAttendance.StudentId}")" class="@listItemClassName">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="my-0">@studentAttendance.StudentFullName</h6>
+              <BalanceBadge Balance="@studentAttendance.GroupBalance" />
+            </div>
+
+            @if (this.canChangeAttendanceLog)
+            {
+              <div class="btn-group-sm">
+                @{
+                  var buttonClassName = "btn-secondary";
+                  var labelIcon = string.Empty;
+                  var label = "Отметить";
+                }
+                @if (studentAttendance.IsExists)
+                {
+                  if (studentAttendance.AbsenceReason == null)
+                  {
+                    labelIcon = "fa-user-check";
+                    label = studentAttendance.IsTrial ? "Пробное занятие" : "Был";
+                    buttonClassName = studentAttendance.IsTrial ? "btn-primary" : "btn-success";
+                  }
+                  else if (studentAttendance.AbsenceReason == Absence.Sickness.Reason)
+                  {
+                    labelIcon = "fa-user-injured";
+                    label = "Болел";
+                    buttonClassName = "btn-warning";
+                  }
+                  else if (studentAttendance.AbsenceReason == Absence.WithoutValidExcuse.Reason)
+                  {
+                    labelIcon = "fa-user-slash";
+                    label = "Не был";
+                    buttonClassName = "btn-danger";
+                  }
+                }
+
+                @if (this.processedStudentId.Contains(studentAttendance.StudentId))
+                {
+                  <div class="fade-in animation-step-end animation-500-ms d-inline">
+                    <span class="spinner-border spinner-border-sm text-primary mr-2" role="status" aria-hidden="true"></span>
+                  </div>
+                  buttonClassName += " disabled";
+                }
+
+                <button class="btn @buttonClassName btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  @if (!string.IsNullOrEmpty(labelIcon))
+                  {
+                    <i class="fas @labelIcon mr-2"></i>
+                  }
+                  @label
+                </button>
+
+                <div class="dropdown-menu">
+                  @if (studentAttendance.IsTrial)
+                  {
+                    <button class="dropdown-item" @onclick="@(async () => await this.OnMarkStudentClick(studentAttendance, null, true))"><i class="fas fa-user-check text-primary mr-2"></i>Пробное занятие</button>
+                  }
+                  else
+                  {
+                    <button class="dropdown-item" @onclick="@(async () => await this.OnMarkStudentClick(studentAttendance, null, false))"><i class="fas fa-user-check text-success mr-2"></i>Был</button>
+                  }
+                  <button class="dropdown-item" @onclick="@(async () => await this.OnMarkStudentClick(studentAttendance, Absence.WithoutValidExcuse.Reason, false))"><i class="fas fa-user-slash text-danger mr-2"></i>Не был</button>
+                  <button class="dropdown-item" @onclick="@(async () => await this.OnMarkStudentClick(studentAttendance, Absence.Sickness.Reason, false))"><i class="fas fa-user-injured text-warning mr-2"></i>Болел</button>
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item" @onclick="@(async () => await this.OnClearMarkStudent(studentAttendance))"><i class="fas fa-times text-secondary mr-2"></i>Очистить</button>
+                </div>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  else
+  {
+    <div class="alert alert-info" role="alert">
+      В группе нет учеников
+    </div>
+  }
+}

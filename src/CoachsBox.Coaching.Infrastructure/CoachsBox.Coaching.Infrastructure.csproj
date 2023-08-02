@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\EnumerationConfiguration.cs" />
+    <Compile Remove="Configurations\GenderConfiguration.cs" />
+    <Compile Remove="Configurations\MonthConfiguration.cs" />
+    <Compile Remove="Configurations\SportConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoachsBox.Coaching.Accounting\CoachsBox.Coaching.Accounting.csproj" />
+    <ProjectReference Include="..\CoachsBox.Coaching.Application\CoachsBox.Coaching.Application.csproj" />
+    <ProjectReference Include="..\CoachsBox.Coaching\CoachsBox.Coaching.csproj" />
+    <ProjectReference Include="..\CoachsBox.Core\CoachsBox.Core.csproj" />
+    <ProjectReference Include="..\CoachsBox.Infrastructure\CoachsBox.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

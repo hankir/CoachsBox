@@ -1,0 +1,257 @@
+﻿@using CoachsBox.WebApp.AppFacade.Accounting
+@inherits OwningComponentBase<ISalaryServiceFacade>
+
+@{ var title = $"Расчет зарплаты за {this.salary?.DisplayName}"; }
+
+<h1>@title</h1>
+<hr />
+<div>
+  <AlertPageMessage />
+</div>
+@if (this.salary != null)
+{
+  <div class="row mx-0 mb-3">
+    <div class="px-0 pr-lg-2 mt-2 mt-lg-0 col-lg-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Фонд зарплаты</h5>
+          <div class="card-link">
+            <SalaryFund From="this.salary.BeginPeriod" To="this.salary.PaymentsEndPeriod" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="px-0 pr-lg-2 mt-2 mt-lg-0 col-lg-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Начислено</h5>
+          <div class="card-link">
+            <BalanceBadge Balance="this.salary.TotalAmount" ZeroBalanceText="Нет начислений" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="px-0 pr-lg-2 mt-2 mt-lg-0 col-lg-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">К выдаче</h5>
+          <div class="card-link">
+            @if (this.salary.TotalAmountToIssued <= 0 && this.salary.TotalAmount > 0)
+            {
+              <div class="btn-group" role="group" aria-label="Propagation buttons group">
+                <button id="fill-salary-calculations"
+                        class="btn btn-primary btn-sm d-none d-lg-inline-block"
+                        @onclick="@(async () => await this.PropagateSalaryFund())">
+                  @if (this.isPropagating)
+                  {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  }
+                  Распределить
+                </button>
+                <button id="change-salary-payments-ends-period"
+                        class="btn btn-primary btn-sm"
+                        data-toggle="modal"
+                        data-target="#changePaymentsEndPeriodModal">
+                  <i class="fas fa-calendar-alt"></i>
+                </button>
+              </div>
+            }
+            else
+            {
+              <div class="d-flex">
+                <div class="mr-2">
+                  <BalanceBadge Balance="this.salary.TotalAmountToIssued" ZeroBalanceText="Нет начислений" />
+                </div>
+                @if (!this.salary.IsPaid)
+                {
+                  if (this.salary.TotalAmountToIssued > 0)
+                  {
+                    <button id="fill-salary-calculations"
+                            class="btn btn-primary btn-sm d-none d-lg-inline-block"
+                            style="margin-top: -4px"
+                            data-toggle="modal"
+                            data-target="#confirmPropagateModal">
+                      @if (this.isSalaryPaying)
+                      {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      }
+                      Выплатить
+                    </button>
+                  }
+                }
+                else
+                {
+                  <span class="small badge badge-pill badge-primary align-self-center">Выплачено</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="row mx-0" style="margin-bottom:-2px">
+        <ul class="nav nav-tabs card-header-tabs col col-md" id="salaryPages" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="salary-calculations-tab" data-toggle="tab" href="#salary-calculation" role="tab" aria-controls="salary-calculations" aria-selected="true">Начисления</a>
+          </li>
+        </ul>
+        <div class="align-self-end col-auto col-md-auto pr-0 d-flex align-items-center">
+          <div class="custom-control custom-switch mr-3">
+            <input type="checkbox" class="custom-control-input" id="show-forty-percent" @onclick="this.OnShowFortyPercentClick" checked="@this.showFortyPercent" />
+            <label class="custom-control-label" for="show-forty-percent">Отображать 40%</label>
+          </div>
+
+          @{
+            var addCalculationButtonClassNameBase = salary.IsPaid ? "btn btn-secondary" : "btn btn-success";
+          }
+
+          <button id="fill-salary-calculations"
+                  type="button"
+                  disabled="@salary.IsPaid"
+                  title="@(salary.IsPaid ? "Нельзя расчитать выплаченную зарплату" : string.Empty)"
+                  class="@addCalculationButtonClassNameBase btn-sm d-none d-lg-inline-block"
+                  @onclick="@(async () => await this.AddCalculations())">
+            @if (this.isAddingCalculations)
+            {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }
+            Расчитать
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="groupPagesContent">
+      <div class="tab-pane fade show active px-3 pt-3" id="salary-calculations" role="tabpanel" aria-labelledby="salary-calculations-tab">
+        <table class="table table-sm table-hover table-borderless">
+          <thead>
+            <tr>
+              <th scope="col">Тренер</th>
+              <th scope="col">Начислено</th>
+              <th scope="col">Доступно к выдаче</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var coachSalary in this.salary.CoachSalaryCalculationsGroups.OrderBy(salary => salary.CoachFullName))
+            {
+              <tr @key="@($"calculation-coach-{coachSalary.CoachId}")">
+                <td>
+                  <button type="button" class="btn btn-link" data-toggle="modal" data-target="#detailsModal"
+                          @onclick="@(() => this.ShowDetails(coachSalary))">
+                    @coachSalary.CoachFullName
+                  </button>
+                </td>
+                @if (this.showFortyPercent)
+                {
+                  <td class="align-middle"><BalanceBadge Balance="@(coachSalary.TotalAmount * 0.4m)" ZeroBalanceText="-" /></td>
+                  <td class="align-middle"><BalanceBadge Balance="@(coachSalary.TotalToIssued * 0.4m)" ZeroBalanceText="-" /></td>
+                }
+                else
+                {
+                  <td class="align-middle"><BalanceBadge Balance="@coachSalary.TotalAmount" ZeroBalanceText="-" /></td>
+                  <td class="align-middle"><BalanceBadge Balance="@coachSalary.TotalToIssued" ZeroBalanceText="-" /></td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailsModalLabel">Начисления тренера @this.showedDetails?.CoachFullName</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          @if (this.showedDetails != null)
+          {
+            <SalaryCoachCalculationDetails @key="@($"details-coach-{this.showedDetails.CoachId}")"
+                                           SalaryId="this.SalaryId"
+                                           CoachId="this.showedDetails.CoachId"
+                                           PeriodBeginning="this.salary.BeginPeriod"
+                                           PaymentsEndPeriod="this.salary.PaymentsEndPeriod" />
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  @onclick="this.CloseDetails">
+            Закрыть
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="changePaymentsEndPeriodModal" tabindex="-1" aria-labelledby="changePaymentsEndPeriodModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePaymentsEndPeriodModalLabel">Изменение даты учета платежей</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="paymentsPeriod" class="col-form-label">Учитывать платежи до:</label>
+              @{
+                var paymentsPeriodClassName = "form-control";
+                if (!this.IsPaymentsPeriodValid)
+                {
+                  paymentsPeriodClassName += " is-invalid";
+                }
+                var paymentsPeriodString = this.paymentsPeriod.ToString("yyyy-MM-dd");
+              }
+              <input type="date" class="@paymentsPeriodClassName"
+                     value="@paymentsPeriodString"
+                     @onchange="this.PaymentsPeriodChanged"
+                     id="paymentsPeriod" aria-describedby="paymentsPeriodFeedback" />
+              <div id="paymentsPeriodFeedback" class="invalid-feedback">
+                @this.paymentsPeriodValidation
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" disabled="@(!this.IsPaymentsPeriodValid)" class="btn btn-primary" data-dismiss="modal" @onclick="async () => await this.ChangePaymentsEndPeriod()">Изменить</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" id="confirmPropagateModal" aria-labelledby="confirmPropagateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Подтвердите выплату</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <blockquote class="blockquote">
+            <p class="mb-0">Закрыть период и выплатить зарплату?</p>
+            <footer class="blockquote-footer">Отменить выплату будет невозможно</footer>
+          </blockquote>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" @onclick="@(async () => await this.PaySalary())" data-dismiss="modal">Выплатить</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

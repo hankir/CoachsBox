@@ -1,0 +1,150 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <TypeScriptBuildMode>true</TypeScriptBuildMode>
+    <UserSecretsId>86c81de4-ec6f-4205-a92c-eb5561baef4e</UserSecretsId>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="node_modules_old\**" />
+    <Compile Remove="obj\**" />
+    <Content Remove="node_modules_old\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="node_modules_old\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="node_modules_old\**" />
+    <None Remove="obj\**" />
+    <TypeScriptCompile Remove="node_modules_old\**" />
+    <TypeScriptCompile Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\global.d.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="@types\jquery\dist\jquery.slim.d.ts" />
+    <None Remove="@types\jquery\index.d.ts" />
+    <None Remove="@types\jquery\JQuery.d.ts" />
+    <None Remove="@types\jquery\JQueryStatic.d.ts" />
+    <None Remove="@types\jquery\legacy.d.ts" />
+    <None Remove="@types\jquery\LICENSE" />
+    <None Remove="@types\jquery\misc.d.ts" />
+    <None Remove="@types\jquery\README.md" />
+    <None Remove="@types\prop-types\index.d.ts" />
+    <None Remove="@types\prop-types\LICENSE" />
+    <None Remove="@types\prop-types\README.md" />
+    <None Remove="@types\react-dom\index.d.ts" />
+    <None Remove="@types\react-dom\LICENSE" />
+    <None Remove="@types\react-dom\node-stream\index.d.ts" />
+    <None Remove="@types\react-dom\README.md" />
+    <None Remove="@types\react-dom\server\index.d.ts" />
+    <None Remove="@types\react-dom\test-utils\index.d.ts" />
+    <None Remove="@types\react\global.d.ts" />
+    <None Remove="@types\react\index.d.ts" />
+    <None Remove="@types\react\LICENSE" />
+    <None Remove="@types\react\README.md" />
+    <None Remove="@types\requirejs\index.d.ts" />
+    <None Remove="@types\requirejs\LICENSE" />
+    <None Remove="@types\requirejs\README.md" />
+    <None Remove="@types\sizzle\index.d.ts" />
+    <None Remove="@types\sizzle\LICENSE" />
+    <None Remove="@types\sizzle\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Coravel" Version="4.0.2" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.3" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.2.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="MySqlConnector" Version="0.69.10" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoachsBox.Coaching.Application\CoachsBox.Coaching.Application.csproj" />
+    <ProjectReference Include="..\CoachsBox.Coaching.Infrastructure.MySqlMigrations\CoachsBox.Coaching.Infrastructure.MySqlMigrations.csproj" />
+    <ProjectReference Include="..\CoachsBox.Coaching.Infrastructure\CoachsBox.Coaching.Infrastructure.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="node_modules\@types\jquery\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\jquery\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\prop-types\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\prop-types\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\react-dom\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\react-dom\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\react\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\react\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\requirejs\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\requirejs\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\sizzle\LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="node_modules\@types\sizzle\README.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <TypeScriptCompile Update="wwwroot\js\startup.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using CoachsBox.WebApp.Areas.Identity.Data
+@using CoachsBox.WebApp.Areas.Admin.Facade
+@using CoachsBox.Coaching.PersonModel
+@using CoachsBox.WebApp.AppFacade.Primitives.DTO
+@using CoachsBox.WebApp.Areas.Admin.Facade.Internal
+
+@model CreateBranchCommand
+@inject IPersonRepository personRepository
+@inject UserManager<CoachsBoxWebAppUser> userManager
+
+@{
+  var contactPersonIdList = this.userManager.Users
+    .Where(user => user.PersonId != null)
+    .Select(user => user.PersonId.Value)
+    .ToList();
+
+  var personByIdsSpec = new PersonByIdSpecification(contactPersonIdList);
+  var contactPersons = await this.personRepository.ListAsync(personByIdsSpec);
+
+  var personDTOAssembler = new PersonDTOAssembler();
+  var contactPersonDTOList = personDTOAssembler.ToDTOList(contactPersons);
+
+  var contactPersonList = new SelectList(contactPersonDTOList, nameof(PersonDTO.Id), nameof(PersonDTO.FullName));
+}
+
+<div class="form-group">
+  <label asp-for="ContactPersonId" class="control-label"></label>
+  <select asp-for="ContactPersonId" class="form-control" asp-items="@contactPersonList"></select>
+</div>
+
+<div class="form-group">
+  <input asp-for="Country" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Country)" />
+  <span asp-validation-for="Country" class="text-danger"></span>
+</div>
+<div class="form-group">
+  <input asp-for="State" class="form-control" placeholder="@Html.DisplayNameFor(model => model.State)" />
+  <span asp-validation-for="State" class="text-danger"></span>
+</div>
+<div class="form-group">
+  <input asp-for="City" class="form-control" placeholder="@Html.DisplayNameFor(model => model.City)" />
+  <span asp-validation-for="City" class="text-danger"></span>
+</div>
+<div class="form-group">
+  <input asp-for="Street" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Street)" />
+  <span asp-validation-for="Street" class="text-danger"></span>
+</div>
+<div class="form-group">
+  <input asp-for="ZipCode" class="form-control" placeholder="@Html.DisplayNameFor(model => model.ZipCode)" />
+  <span asp-validation-for="ZipCode" class="text-danger"></span>
+</div>

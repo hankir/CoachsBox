@@ -1,0 +1,15 @@
+﻿@page
+@model CoachsBox.WebApp.Areas.Admin.Pages.Salaries.EditModel
+
+@{
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+  ViewData["Title"] = "Расчет зарплаты";
+}
+
+<component type="typeof(CoachsBox.WebApp.Areas.Admin.Pages.Salaries.Components.SalaryCard)"
+           render-mode="ServerPrerendered"
+           param-SalaryId="this.Model.SalaryId" />
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

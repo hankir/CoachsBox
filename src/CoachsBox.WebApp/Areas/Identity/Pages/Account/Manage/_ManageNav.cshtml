@@ -1,0 +1,18 @@
+﻿@inject SignInManager<CoachsBoxWebAppUser> SignInManager
+@inject UserManager<CoachsBoxWebAppUser> UserManager
+@{
+  var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+  var user = await this.UserManager.GetUserAsync(this.User);
+  var isAdmin = await this.UserManager.IsInRoleAsync(user, CoachsBoxWebAppRole.Administrator);
+}
+<ul class="nav nav-pills flex-column">
+  <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Профиль</a></li>
+  <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Пароль</a></li>
+  @if (hasExternalLogins)
+  {
+  <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">Вход через сервисы</a></li>
+  }
+  <!--<li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Двухфакторная аутентификация</a></li>-->
+  <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Персональные данные</a></li>
+  <li class="nav-item"><a class="nav-link @ManageNavPages.ReportsNavClass(ViewContext)" id="test-seed-data" asp-page="./Reports">Отчетность</a></li>
+</ul>

@@ -1,0 +1,35 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "typeRoots": [ "node_modules/@types" ],
+    "baseUrl": ".",
+    "paths": {
+      "*": [ "js/*" ],
+      "jquery": [ "lib/jquery" ],
+      "react": [ "lib/react/cjs" ],
+      "react-dom": [ "lib/react-dom/cjs" ],
+      "csstype": [ "lib/csstype" ],
+      "popper.js": [ "lib/popperjs/popper" ],
+      "autobind-decorator": [ "lib/autobind-decorator/lib/cjs" ]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5",
+    "module": "amd",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "lib": [
+      "es2015",
+      "es5",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "lib",
+    "node_modules/@types"
+  ]
+}

@@ -1,0 +1,16 @@
+﻿@page
+@model CoachsBox.WebApp.Pages.Students.IndexModel
+
+@{
+  ViewData["Title"] = "Ученики";
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<component type="typeof(CoachsBox.WebApp.Pages.Students.Components.StudentsList)" render-mode="ServerPrerendered"
+           param-InitialFilter="this.Model.Filter"
+           param-PortionSize="25"
+           param-EmptyListMessage="this.Model.EmptyListMessage" />
+
+@section Scripts {
+  <script src="_framework/blazor.server.js"></script>
+}

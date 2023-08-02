@@ -1,0 +1,57 @@
+﻿@inherits OwningComponentBase
+
+@if (this.isPaymentsHistoryLoading)
+{
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="spinner-border text-primary mr-3" role="status"></div>
+    <strong>Загрузка платежей...</strong>
+  </div>
+}
+else
+{
+  if (this.studentPayments.Any())
+  {
+    <AuthorizeView>
+      <ul class="list-group list-group-flush text-left">
+        @foreach (var payment in this.studentPayments)
+        {
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col">
+                <BalanceBadge Balance="payment.Amount" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2 mr-3">
+                <span class="small font-weight-bold text-info"><i class="fas fa-history"></i></span>
+                <span class="small">@context.User?.ToUserTime(payment.WhenOccured)</span>
+              </div>
+              <div class="col-sm-3 mr-3">
+                <span class="small font-weight-bold text-secondary">Группа:</span>
+                <span class="small text-secondary">@payment.GroupName</span>
+              </div>
+              @if (payment.IsProcessed)
+              {
+                <div class="col-sm-3 mr-3">
+                  <span class="badge badge-success">Принят:</span>
+                  <span class="small">@context.User?.ToUserTime(payment.WhenProcessed)</span>
+                </div>
+              }
+              else
+              {
+                <div class="col-sm-3">
+                  <span class="badge badge-warning">Зарегистрирован:</span>
+                  <span class="small">@context.User?.ToUserTime(payment.WhenNoticed)</span>
+                </div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    </AuthorizeView>
+  }
+  else
+  {
+    <h6 class="card-title text-center text-muted mt-3">Нет платежей</h6>
+  }
+}

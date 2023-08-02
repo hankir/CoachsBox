@@ -1,0 +1,27 @@
+﻿@page
+@model CoachsBox.WebApp.Pages.Students.CreateModel
+
+@{
+  Layout = "~/Pages/Shared/_Layout.cshtml";
+  ViewData["Title"] = "Новый ученик";
+  var daDataApiKey = this.Model.Configuration.GetDaDataAPIKey();
+  var isDaDataEnable = !string.IsNullOrWhiteSpace(daDataApiKey);
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+  <form method="post" class="col col-sm col-md col-xl-6 col-lg-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <partial name="_StudentEditorPartial" for="CreateCommand" />
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Добавить ученика</button>
+      <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+  <partial name="PersonEditorsPartial/AddressScripts" for="CreateCommand" />
+}

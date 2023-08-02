@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "require.js@2.3.6",
+      "destination": "wwwroot/lib/requirejs"
+    },
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery"
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery-validation@1.19.1",
+      "destination": "wwwroot/lib/jquery-validation"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "suggestions-jquery@20.3.0",
+      "destination": "wwwroot/lib/suggestions-jquery"
+    },
+    {
+      "provider": "unpkg",
+      "library": "bootstrap@4.5.0",
+      "destination": "wwwroot/lib/bootstrap"
+    },
+    {
+      "library": "core-js@2.6.9",
+      "destination": "wwwroot/lib/core-js"
+    },
+    {
+      "provider": "unpkg",
+      "library": "whatwg-fetch@3.0.0",
+      "destination": "wwwroot/lib/whatwg-fetch"
+    },
+    {
+      "provider": "unpkg",
+      "library": "csstype@2.6.6",
+      "destination": "wwwroot/lib/csstype"
+    },
+    {
+      "library": "popper.js@1.15.0",
+      "destination": "wwwroot/lib/popperjs"
+    },
+    {
+      "library": "font-awesome@5.10.0-9",
+      "destination": "wwwroot/lib/font-awesome"
+    },
+    /**
+     * Определения типов @types
+     */
+    {
+      "provider": "unpkg",
+      "library": "@types/jquery@3.3.29",
+      "destination": "wwwroot/node_modules/@types/jquery"
+    },
+    {
+      "provider": "unpkg",
+      "library": "@types/sizzle@2.3.2",
+      "destination": "wwwroot/node_modules/@types/sizzle"
+    },
+    {
+      "provider": "unpkg",
+      "library": "@types/requirejs@2.1.31",
+      "destination": "wwwroot/node_modules/@types/requirejs"
+    },
+    {
+      "provider": "unpkg",
+      "library": "@types/bootstrap@4.5.0",
+      "destination": "wwwroot/node_modules/@types/bootstrap"
+    }
+  ]
+}
